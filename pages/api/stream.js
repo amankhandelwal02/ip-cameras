@@ -1,7 +1,7 @@
 import fs from 'fs';
-import path from 'path';
 
 export default function handler(req, res) {
+
   const videoPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4'; // Update with the path to your video file
 
   const videoStat = fs.statSync(videoPath);
