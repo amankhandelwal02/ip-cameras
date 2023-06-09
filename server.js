@@ -354,7 +354,7 @@ const path = require("path");
 const { spawn } = require("child_process");
 
 const Webcam = NodeWebcam.create({
-  device: "FaceTime HD Camera",
+  device: "/dev/video0",
   width: 1280,
   height: 720,
   quality: 80,
@@ -364,9 +364,9 @@ const Webcam = NodeWebcam.create({
 });
 
 const outputPath =
-  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
+  "/home/aman/Desktop/workspace/ip_cameras/output"; // Update with the desired output directory
 const videoOutputPath =
-  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4"; // Update with the desired video output path
+  "/home/aman/Desktop/workspace/ip_cameras/output/output.mp4"; // Update with the desired video output path
 
 let frameCount = 0;
 let framePaths = [];

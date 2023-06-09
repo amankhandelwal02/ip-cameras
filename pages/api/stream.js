@@ -2,11 +2,16 @@ import fs from 'fs';
 
 export default function handler(req, res) {
 
-  const videoPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4'; // Update with the path to your video file
+  const videoPath = '/home/aman/Desktop/workspace/ip_cameras/output/output.mp4'; // Update with the path to your video file
 
   const videoStat = fs.statSync(videoPath);
   const fileSize = videoStat.size;
   const range = req.headers.range;
+
+    // Set cache-control headers to prevent caching
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
 
   if (range) {
     const parts = range.replace(/bytes=/, '').split('-');
