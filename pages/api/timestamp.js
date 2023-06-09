@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const videoPath = '/home/aman/Desktop/workspace/ip_cameras/output/output.mp4'; // Update with the path to your video file
+const videoPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4'; // Update with the path to your video file
 
 const getVideoTimestamp = () => {
   const videoStat = fs.statSync(videoPath);
