@@ -101,7 +101,7 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
           <BsCheck className="text-2xl" />
           <p> Save</p>
         </button>
-          {isVisible && <Cam/>}
+         
 
         </div>
       </div>
