@@ -1,3 +1,4 @@
+
 const NodeWebcam = require("node-webcam");
 const fs = require("fs");
 const path = require("path");
@@ -75,8 +76,11 @@ function convertToVideo() {
 }
 
   // Start capturing image frames
-  captureFrame();
-
+  if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath);
+    captureFrame();
+    }
+  
   // Stop capturing frames and convert them into a video every 10 seconds
   setInterval(() => {
     Webcam.clear();
