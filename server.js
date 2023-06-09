@@ -14,9 +14,9 @@ const Webcam = NodeWebcam.create({
 });
 
 const outputPath =
-  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
+  "/home/aman/Desktop/workspace/ip_cameras/output"; // Update with the desired output directory
 const videoOutputPath =
-  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4"; // Update with the desired video output path
+  "/home/aman/Desktop/workspace/ip_cameras/output/output.mp4"; // Update with the desired video output path
 
 let frameCount = 0;
 let framePaths = [];
