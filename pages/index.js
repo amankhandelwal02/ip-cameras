@@ -1,8 +1,8 @@
 import { Inter } from 'next/font/google'
-import MainHome from '../component/mainHome'
-import PopUp from '../component/popUp'
+import MainHome from '../components/mainHome'
+import PopUp from '../components/popUp'
 import { useState } from 'react'
-import Cam from '../component/cam'
+import Cam from '../components/cam'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
