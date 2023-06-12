@@ -1,0 +1,101 @@
+Arguments: 
+  /Users/ezeejain/.nvm/versions/node/v16.16.0/bin/node /usr/local/bin/yarn add node-rtsp-stream-client
+
+PATH: 
+  /Users/ezeejain/.nvm/versions/node/v16.16.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/ezeejain/Library/Android/sdk/platform-tools:/Users/ezeejain/.nvm/versions/node/v16.16.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/ezeejain/Library/Android/sdk/emulator:/Users/ezeejain/Library/Android/sdk/tools:/Users/ezeejain/Library/Android/sdk/tools/bin:/Users/ezeejain/.rvm/bin:/Users/ezeejain/Library/Android/sdk/emulator:/Users/ezeejain/Library/Android/sdk/platform-tools:/Users/ezeejain/Library/Android/sdk/tools:/Users/ezeejain/Library/Android/sdk/tools/bin:/Users/ezeejain/.rvm/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.16.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://registry.npmjs.org/node-rtsp-stream-client: Not found
+      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66145:18)
+      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:527:28)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:527:28)
+      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:641:28)
+      at IncomingMessage.emit (node:events:539:35)
+      at endReadableNT (node:internal/streams/readable:1345:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "ip-cameras",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+    },
+    "dependencies": {
+      "@ffmpeg-installer/ffmpeg": "^1.1.0",
+      "@ffmpeg/core": "^0.11.0",
+      "@ffmpeg/ffmpeg": "^0.11.6",
+      "axios": "^1.4.0",
+      "child_process": "^1.0.2",
+      "cookie-parser": "^1.4.6",
+      "express": "^4.18.2",
+      "ffmpeg": "^0.0.4",
+      "ffmpeg-static": "^5.1.0",
+      "fluent-ffmpeg": "^2.1.2",
+      "fs": "^0.0.1-security",
+      "http": "^0.0.1-security",
+      "install": "^0.13.0",
+      "isomorphic-ws": "^5.0.0",
+      "morgan": "^1.10.0",
+      "net": "^1.0.2",
+      "next": "13.3.4",
+      "next-connect": "^1.0.0",
+      "node-media-server": "^2.5.0",
+      "node-netstat": "^1.8.0",
+      "node-onvif": "^0.1.7",
+      "node-rtsp-stream": "^0.0.9",
+      "node-webcam": "^0.8.2",
+      "npm": "^9.6.7",
+      "onvif": "^0.6.8",
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "react-icons": "^4.9.0",
+      "react-loader-spinner": "^5.3.4",
+      "react-loaders": "^3.0.1",
+      "react-player": "^2.12.0",
+      "react-webcam": "^7.1.1",
+      "reconnecting-websocket": "^4.4.0",
+      "request": "^2.88.2",
+      "rtsp-client": "^1.4.5",
+      "rtsp-ffmpeg": "^0.0.17",
+      "rtsp-stream": "^1.0.0",
+      "server": "^1.0.38",
+      "simple-peer": "^9.11.1",
+      "socket.io": "^4.6.2",
+      "socket.io-client": "^4.6.1",
+      "stream": "^0.0.2",
+      "util": "^0.12.5",
+      "webrtc": "^1.14.1",
+      "websocket": "^1.0.34",
+      "ws": "^8.13.0"
+    },
+    "devDependencies": {
+      "autoprefixer": "^10.4.14",
+      "eslint": "8.41.0",
+      "eslint-config-next": "13.4.3",
+      "postcss": "^8.4.24",
+      "tailwindcss": "^3.3.2"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

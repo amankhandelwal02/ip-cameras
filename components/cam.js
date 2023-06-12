@@ -30,7 +30,7 @@ const Cam = () => {
 
   return (
     <div>
-      <video key={videoKey} controls>
+      <video key={videoKey} controls autoPlay>
         <source src={`/api/stream?${Date.now()}`} type="video/mp4" />
         Your browser does not support the video tag.
       </video>

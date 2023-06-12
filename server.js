@@ -1,4 +1,3 @@
-
 const NodeWebcam = require("node-webcam");
 const fs = require("fs");
 const path = require("path");
@@ -14,8 +13,7 @@ const Webcam = NodeWebcam.create({
   verbose: false,
 });
 
-const outputPath =
-  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
 const videoOutputPath =
   "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4"; // Update with the desired video output path
 
@@ -75,63 +73,19 @@ function convertToVideo() {
   });
 }
 
-  // Start capturing image frames
-  if (!fs.existsSync(outputPath)) {
-    fs.mkdirSync(outputPath);
-    captureFrame();
-    }
-  
-  // Stop capturing frames and convert them into a video every 10 seconds
-  setInterval(() => {
-    Webcam.clear();
-    convertToVideo();
-  }, 10000); // Convert frames to video every 10 seconds (adjust the duration as needed)
+// Start capturing image frames
+if (!fs.existsSync(outputPath)) {
+  fs.mkdirSync(outputPath);
+  captureFrame();
+}
 
+// Stop capturing frames and convert them into a video every 10 seconds
+setInterval(() => {
+  Webcam.clear();
+  convertToVideo();
+}, 10000); // Convert frames to video every 10 seconds (adjust the duration as needed)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // const NodeWebcam = require("node-webcam");
+// const NodeWebcam = require("node-webcam");
 // const fs = require("fs");
 // const path = require("path");
 // const { spawn } = require("child_process");
@@ -216,16 +170,7 @@ function convertToVideo() {
 //     convertToVideo();
 //   }, 10000); // Convert frames to video every 10 seconds (adjust the duration as needed)
 
-
-
-
-
-
-
-
-
-
-  // // // const NodeWebcam = require('node-webcam');
+// // // const NodeWebcam = require('node-webcam');
 // // // const fs = require('fs');
 // // // const path = require('path');
 // // // const { spawn } = require('child_process');
@@ -574,4 +519,3 @@ function convertToVideo() {
 
 // // Start capturing image frames
 // captureFrame();
-
