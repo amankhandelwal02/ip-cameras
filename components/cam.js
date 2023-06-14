@@ -1,34 +1,124 @@
-import { useEffect, useRef } from 'react';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Cam = () => {
-const videoRef = useRef(null);
+  const [rtspUrl, setRtspUrl] = useState("rtsp://localhost:8554/live/stream");
 
-useEffect(() => {
-  const videoElement = videoRef.current;
+  useEffect(() => {
+    // Fetch the RTSP URL from the backend API
+    axios
+      .get("/api/rtsp-url")
+      .then((response) => {
+        const { rtspUrl } = response.data;
+        setRtspUrl(rtspUrl);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch RTSP URL:", error);
+      });
+  }, []);
 
-  // Set the source of the video element to the RTSP URL
-  videoElement.src = "rtsp://localhost:8554/live/stream";
-
-  // Load and play the video
-  videoElement.load();
-  videoElement.play();
-
-  return () => {
-    // Cleanup: Stop the video and remove the source
-    videoElement.pause();
-    videoElement.removeAttribute("src");
-    videoElement.load();
-  };
-}, []);
-
-return (
-  <div>
-    <video ref={videoRef} controls autoPlay />
-  </div>
-);
+  return (
+    <div>
+      <h1>Stream Viewer</h1>
+      {rtspUrl && <video src={rtspUrl} controls autoPlay />}
+    </div>
+  );
 };
 
 export default Cam;
+
+
+
+
+
+
+
+
+
+
+// import { useEffect, useRef } from "react";
+
+// const Cam = () => {
+//   const videoRef = useRef(null);
+
+//   useEffect(() => {
+//     const videoElement = videoRef.current;
+
+//     const startStream = async () => {
+//       try {
+//         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+//         videoElement.srcObject = stream;
+//       } catch (error) {
+//         console.error("Error accessing media devices:", error);
+//       }
+//     };
+
+//     startStream();
+
+//     return () => {
+//       if (videoElement.srcObject) {
+//         const stream = videoElement.srcObject;
+//         const tracks = stream.getTracks();
+//         tracks.forEach((track) => {
+//           track.stop();
+//         });
+//       }
+//     };
+//   }, []);
+
+//   return (
+//     <div>
+//       <h1>Live Stream</h1>
+//       <video ref={videoRef} autoPlay></video>
+//     </div>
+//   );
+// };
+
+// export default Cam;
+
+
+
+
+
+
+
+
+
+// import { useEffect, useRef } from 'react';
+
+// const Cam = () => {
+// const videoRef = useRef(null);
+// console.log("00000000000000")
+
+// useEffect(() => {
+//   console.log("aaaaaaaaa")
+//   const videoElement = videoRef.current;
+
+//   // Set the source of the video element to the RTSP URL
+//   videoElement.src = "rtsp://localhost:8554/live/stream";
+// console.log("bbbbbbbbb",videoElement)
+//   // Load and play the video
+//   videoElement.load();
+//   videoElement.play();
+//   console.log("cccccccc")
+
+//   return () => {
+//     // Cleanup: Stop the video and remove the source
+//     videoElement.pause();
+//     videoElement.removeAttribute("src");
+//     videoElement.load();
+//     console.log("dddddddd")
+//   };
+// }, []);
+
+// return (
+//   <div>
+//     <video ref={videoRef} controls autoPlay />
+//   </div>
+// );
+// };
+
+// export default Cam;
 
 // import React, { useState, useEffect } from 'react';
 
