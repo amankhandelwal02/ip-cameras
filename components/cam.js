@@ -1,3 +1,35 @@
+import { useEffect, useRef } from 'react';
+
+const Cam = () => {
+const videoRef = useRef(null);
+
+useEffect(() => {
+  const videoElement = videoRef.current;
+
+  // Set the source of the video element to the RTSP URL
+  videoElement.src = "rtsp://localhost:8554/live/stream";
+
+  // Load and play the video
+  videoElement.load();
+  videoElement.play();
+
+  return () => {
+    // Cleanup: Stop the video and remove the source
+    videoElement.pause();
+    videoElement.removeAttribute("src");
+    videoElement.load();
+  };
+}, []);
+
+return (
+  <div>
+    <video ref={videoRef} controls autoPlay />
+  </div>
+);
+};
+
+export default Cam;
+
 // import React, { useState, useEffect } from 'react';
 
 // const Cam = () => {
@@ -81,40 +113,40 @@
 
 
 
-import { useEffect, useRef } from 'react';
-import Hls from 'hls.js';
+// import { useEffect, useRef } from 'react';
+// import Hls from 'hls.js';
 
-const Cam = () => {
-  const videoRef = useRef(null);
+// const Cam = () => {
+//   const videoRef = useRef(null);
 
-  useEffect(() => {
-    const videoElement = videoRef.current;
+//   useEffect(() => {
+//     const videoElement = videoRef.current;
 
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource('http://localhost:8000/hls/stream.m3u8');
-      hls.attachMedia(videoElement);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        videoElement.play();
-      });
-    }
+//     if (Hls.isSupported()) {
+//       const hls = new Hls();
+//       hls.loadSource('http://localhost:8000/hls/stream.m3u8');
+//       hls.attachMedia(videoElement);
+//       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+//         videoElement.play();
+//       });
+//     }
 
-    return () => {
-      if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.detachMedia(videoElement);
-        hls.destroy();
-      }
-    };
-  }, []);
+//     return () => {
+//       if (Hls.isSupported()) {
+//         const hls = new Hls();
+//         hls.detachMedia(videoElement);
+//         hls.destroy();
+//       }
+//     };
+//   }, []);
 
-  return (
-    <div>
-      <h1>RTSP Stream</h1>
-      <video ref={videoRef} controls style={{ width: '100%' }} />
-    </div>
-  );
-};
+//   return (
+//     <div>
+//       <h1>RTSP Stream</h1>
+//       <video ref={videoRef} controls style={{ width: '100%' }} />
+//     </div>
+//   );
+// };
 
-export default Cam;
+// export default Cam;
 
