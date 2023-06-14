@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/ezeejain/.nvm/versions/node/v16.16.0/bin/node /usr/local/bin/yarn add node-rtsp-stream-client
+  /Users/ezeejain/.nvm/versions/node/v16.16.0/bin/node /usr/local/bin/yarn add mediasoup-rtsp-server
 
 PATH: 
   /Users/ezeejain/.nvm/versions/node/v16.16.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/ezeejain/Library/Android/sdk/platform-tools:/Users/ezeejain/.nvm/versions/node/v16.16.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/ezeejain/Library/Android/sdk/emulator:/Users/ezeejain/Library/Android/sdk/tools:/Users/ezeejain/Library/Android/sdk/tools/bin:/Users/ezeejain/.rvm/bin:/Users/ezeejain/Library/Android/sdk/emulator:/Users/ezeejain/Library/Android/sdk/platform-tools:/Users/ezeejain/Library/Android/sdk/tools:/Users/ezeejain/Library/Android/sdk/tools/bin:/Users/ezeejain/.rvm/bin
@@ -14,7 +14,7 @@ Platform:
   darwin arm64
 
 Trace: 
-  Error: https://registry.npmjs.org/node-rtsp-stream-client: Not found
+  Error: https://registry.npmjs.org/mediasoup-rtsp-server: Not found
       at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66145:18)
       at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140890:22)
       at Request.emit (node:events:527:28)
@@ -49,9 +49,11 @@ npm manifest:
       "ffmpeg-static": "^5.1.0",
       "fluent-ffmpeg": "^2.1.2",
       "fs": "^0.0.1-security",
+      "hls.js": "^1.4.5",
       "http": "^0.0.1-security",
       "install": "^0.13.0",
       "isomorphic-ws": "^5.0.0",
+      "mediasoup": "^3.12.3",
       "morgan": "^1.10.0",
       "net": "^1.0.2",
       "next": "13.3.4",
@@ -59,6 +61,7 @@ npm manifest:
       "node-media-server": "^2.5.0",
       "node-netstat": "^1.8.0",
       "node-onvif": "^0.1.7",
+      "node-rtsp-rtmp-server": "^0.4.0",
       "node-rtsp-stream": "^0.0.9",
       "node-webcam": "^0.8.2",
       "npm": "^9.6.7",
