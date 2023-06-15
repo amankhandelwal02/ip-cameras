@@ -1,3 +1,69 @@
+const rtsp = require('rtsp-server');
+const fs = require('fs');
+
+const videoPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/earth.mp4'; 
+
+const server = rtsp.createServer(function (req, res) {
+  console.log(req.method, req.url);
+
+  switch (req.method) {
+    case 'OPTIONS':
+      res.setHeader('Public', 'OPTIONS, DESCRIBE, SETUP, PLAY');
+      res.end();
+      break;
+    case 'DESCRIBE':
+      var sdp = generateSdp();
+      res.setHeader('Content-Type', 'application/sdp');
+      res.setHeader('Content-Length', sdp.length);
+      res.end(sdp);
+      break;
+    case 'SETUP':
+      // Handle SETUP request if needed
+      res.end();
+      break;
+    case 'PLAY':
+      var videoStream = fs.createReadStream(videoPath);
+      console.log('play', videoStream)
+      videoStream.pipe(res);
+      break;
+    default:
+      res.statusCode = 501;
+      res.end();
+  }
+});
+
+server.listen(8554, function () {
+  var port = server.address().port;
+  console.log('RTSP server is running on port:', port);
+});
+
+function generateSdp() {
+  var sdp = 'v=0\r\n';
+  sdp += 'o=- 0 0 IN IP4 127.0.0.1\r\n';
+  sdp += 's=RTSP Server\r\n';
+  sdp += 't=0 0\r\n';
+  sdp += 'c=IN IP4 127.0.0.1\r\n';
+  sdp += 'm=video 0 RTP/AVP 96\r\n';
+  sdp += 'a=rtpmap:96 H264/90000\r\n';
+  sdp += 'a=control:stream1\r\n';
+  return sdp;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // const mediasoup = require('mediasoup');
 // const fs = require('fs');
 // const { Readable } = require('stream');
@@ -366,106 +432,116 @@
 //   return sdp;
 // }
 
-var rtsp = require('rtsp-server');
-var fs = require('fs');
 
-var server = rtsp.createServer(function (req, res) {
-  console.log(req.method, req.url);
 
-  switch (req.method) {
-    case 'OPTIONS':
-      res.setHeader('Public', 'OPTIONS, DESCRIBE, SETUP, PLAY');
-      res.end();
-      break;
-    case 'DESCRIBE':
-      var sdp = generateSdp();
-      res.setHeader('Content-Type', 'application/sdp');
-      res.setHeader('Content-Length', sdp.length);
-      res.end(sdp);
-      break;
-    case 'SETUP':
-      var session = getSession(req.url); // Extract the session ID from the URL
-      var clientPort = getClientPort(req.headers['transport']); // Extract the client RTP/RTCP ports from the Transport header
+
+
+
+
+
+
+
+
+// var rtsp = require('rtsp-server');
+// var fs = require('fs');
+
+// var server = rtsp.createServer(function (req, res) {
+//   console.log(req.method, req.url);
+
+//   switch (req.method) {
+//     case 'OPTIONS':
+//       res.setHeader('Public', 'OPTIONS, DESCRIBE, SETUP, PLAY');
+//       res.end();
+//       break;
+//     case 'DESCRIBE':
+//       var sdp = generateSdp();
+//       res.setHeader('Content-Type', 'application/sdp');
+//       res.setHeader('Content-Length', sdp.length);
+//       res.end(sdp);
+//       break;
+//     case 'SETUP':
+//       var session = getSession(req.url); // Extract the session ID from the URL
+//       var clientPort = getClientPort(req.headers['transport']); // Extract the client RTP/RTCP ports from the Transport header
       
-      // Setup the RTP and RTCP streams for the session
-      setupStreams(session, clientPort.rtpPort, clientPort.rtcpPort);
+//       // Setup the RTP and RTCP streams for the session
+//       setupStreams(session, clientPort.rtpPort, clientPort.rtcpPort);
 
-      res.setHeader('Transport', req.headers['transport']);
-      res.setHeader('Session', session);
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Pragma', 'no-cache');
-      res.end();
-      break;
-    case 'PLAY':
-      var session = getSession(req.headers['session']);
-      var rtpPort = getRtpPort(req.headers['transport']);
+//       res.setHeader('Transport', req.headers['transport']);
+//       res.setHeader('Session', session);
+//       res.setHeader('Cache-Control', 'no-cache');
+//       res.setHeader('Pragma', 'no-cache');
+//       res.end();
+//       break;
+//     case 'PLAY':
+//       var session = getSession(req.headers['session']);
+//       var rtpPort = getRtpPort(req.headers['transport']);
       
-      // Start playing the video stream on the specified RTP port
-      playStream(session, rtpPort);
+//       // Start playing the video stream on the specified RTP port
+//       playStream(session, rtpPort);
 
-      res.setHeader('Session', req.headers['session']);
-      res.end();
-      break;
-    default:
-      res.statusCode = 501;
-      res.end();
-  }
-});
+//       res.setHeader('Session', req.headers['session']);
+//       res.end();
+//       break;
+//     default:
+//       res.statusCode = 501;
+//       res.end();
+//   }
+// });
 
-server.listen(8557, function () {
-  var port = server.address().port;
-  console.log('RTSP server is running on port:', port);
-});
+// server.listen(8557, function () {
+//   var port = server.address().port;
+//   console.log('RTSP server is running on port:', port);
+// });
 
-function generateSdp() {85548554
-  var sdp = 'v=0\r\n';
-  sdp += 'o=- 0 0 IN IP4 127.0.0.1\r\n';
-  sdp += 's=RTSP Server\r\n';
-  sdp += 't=0 0\r\n';
-  sdp += 'c=IN IP4 127.0.0.1\r\n';
-  sdp += 'm=video 0 RTP/AVP 96\r\n';
-  sdp += 'a=rtpmap:96 H264/90000\r\n';
-  sdp += 'a=control:stream1\r\n';
-  return sdp;
-}
+// function generateSdp() {85548554
+//   var sdp = 'v=0\r\n';
+//   sdp += 'o=- 0 0 IN IP4 127.0.0.1\r\n';
+//   sdp += 's=RTSP Server\r\n';
+//   sdp += 't=0 0\r\n';
+//   sdp += 'c=IN IP4 127.0.0.1\r\n';
+//   sdp += 'm=video 0 RTP/AVP 96\r\n';
+//   sdp += 'a=rtpmap:96 H264/90000\r\n';
+//   sdp += 'a=control:stream1\r\n';
+//   return sdp;
+// }
 
-function getSession(url) {
-  // Extract the session ID from the URL
-  // You may need to implement your own logic here based on your requirements
-  // In this example, we assume the session ID is present in the last segment of the URL
-  var segments = url.split('/');
-  return segments[segments.length - 1];
-}
+// function getSession(url) {
+//   // Extract the session ID from the URL
+//   // You may need to implement your own logic here based on your requirements
+//   // In this example, we assume the session ID is present in the last segment of the URL
+//   var segments = url.split('/');
+//   return segments[segments.length - 1];
+// }
 
-function getClientPort(transportHeader) {
-  // Extract the client RTP/RTCP ports from the Transport header
-  // You may need to implement your own logic here based on your requirements
-  // In this example, we assume the ports are provided in the format "client_port=1234-1235"
-  var clientPort = transportHeader.match(/client_port=(\d+)-(\d+)/);
-  return {
-    rtpPort: parseInt(clientPort[1]),
-    rtcpPort: parseInt(clientPort[2])
-  };
-}
+// function getClientPort(transportHeader) {
+//   // Extract the client RTP/RTCP ports from the Transport header
+//   // You may need to implement your own logic here based on your requirements
+//   // In this example, we assume the ports are provided in the format "client_port=1234-1235"
+//   var clientPort = transportHeader.match(/client_port=(\d+)-(\d+)/);
+//   return {
+//     rtpPort: parseInt(clientPort[1]),
+//     rtcpPort: parseInt(clientPort[2])
+//   };
+// }
 
-function setupStreams(session, rtpPort, rtcpPort) {
-  // Implement your logic to set up the RTP and RTCP streams for the session
-  // You may use libraries or frameworks that provide RTP/RTCP functionality to handle the stream setup
-  // This typically involves creating sockets, configuring the streams, and establishing the necessary connections
-  // Refer to the documentation of your chosen library/framework for more details
-  // In this example, we are only logging the setup information
-  console.log('Setting up streams for session:', session);
-  console.log('RTP port:', rtpPort);
-  console.log('RTCP port:', rtcpPort);
-}
+// function setupStreams(session, rtpPort, rtcpPort) {
+//   // Implement your logic to set up the RTP and RTCP streams for the session
+//   // You may use libraries or frameworks that provide RTP/RTCP functionality to handle the stream setup
+//   // This typically involves creating sockets, configuring the streams, and establishing the necessary connections
+//   // Refer to the documentation of your chosen library/framework for more details
+//   // In this example, we are only logging the setup information
+//   console.log('Setting up streams for session:', session);
+//   console.log('RTP port:', rtpPort);
+//   console.log('RTCP port:', rtcpPort);
+// }
 
-function playStream(session, rtpPort) {
-  // Implement your logic to start playing the video stream on the specified RTP port
-  // You may use libraries or frameworks that provide RTP functionality to handle the stream playback
-  // This typically involves reading the video data from the file and sending it over the RTP stream
-  // Refer to the documentation of your chosen library/framework for more details
-  // In this example, we are only logging the playback information
-  console.log('Playing stream for session:', session);
-  console.log('RTP port:', rtpPort);
-}
+// function playStream(session, rtpPort) {
+//   // Implement your logic to start playing the video stream on the specified RTP port
+//   // You may use libraries or frameworks that provide RTP functionality to handle the stream playback
+//   // This typically involves reading the video data from the file and sending it over the RTP stream
+//   // Refer to the documentation of your chosen library/framework for more details
+//   // In this example, we are only logging the playback information
+//   console.log('Playing stream for session:', session);
+//   console.log('RTP port:', rtpPort);
+// }
 
