@@ -5,6 +5,7 @@ import { useState } from "react";
 import Cam from "../components/cam";
 import { FiPlus } from "react-icons/Fi";
 import Sidebar from "../components/sidebar";
+import Cam1 from "../components/cam1";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -14,7 +15,8 @@ export default function Home() {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   return (
     <div className="font-extrabold">
-      {!isButtonClicked ? (
+    <Cam1/>
+      {/* {!isButtonClicked ? (
         <MainHome setVisible={setVisible} camName={camName} />
       ) : (
         <div className="flex">
@@ -43,7 +45,7 @@ export default function Home() {
           isButtonClicked={isButtonClicked}
           setIsButtonClicked={setIsButtonClicked}
         />
-      )}
+      )} */}
     </div>
   );
 }
