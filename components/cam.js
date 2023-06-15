@@ -2,25 +2,26 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Cam = () => {
-  const [rtspUrl, setRtspUrl] = useState("rtsp://localhost:8554/live/stream");
+  const [rtspUrl, setRtspUrl] = useState("");
 
   useEffect(() => {
-    // Fetch the RTSP URL from the backend API
-    axios
-      .get("/api/rtsp-url")
-      .then((response) => {
+    const fetchRtspUrl = async () => {
+      try {
+        const response = await axios.get("/api/rtsp-url");
         const { rtspUrl } = response.data;
         setRtspUrl(rtspUrl);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Failed to fetch RTSP URL:", error);
-      });
-  }, []);
+      }
+    };
 
+    fetchRtspUrl();
+  }, []);
+console.log("rtsppp",rtspUrl)
   return (
     <div>
       <h1>Stream Viewer</h1>
-      {rtspUrl && <video src={rtspUrl} controls autoPlay />}
+      {rtspUrl && <video src="rtsp://localhost:8554/live/stream" controls autoPlay />}
     </div>
   );
 };
@@ -31,6 +32,45 @@ export default Cam;
 
 
 
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+
+
+
+// import axios from "axios";
+
+// const Cam = () => {
+//   const [rtspUrl, setRtspUrl] = useState("");
+
+//   useEffect(() => {
+    
+//     axios.get("/api/rtsp-url")
+//       .then(response => {
+//         const { rtspUrl } = response.data;
+//         setRtspUrl(rtspUrl);
+//       })
+//       .catch(error => {
+//         console.error("Failed to fetch RTSP URL:", error);
+//       });
+//   }, []);
+// console.log("rtspurl",rtspUrl)
+//   return (
+//     <div>
+//       <h1>Stream Viewer</h1>
+//        <video src={rtspUrl} controls autoPlay />
+//     </div>
+//   );
+// };
+
+// export default Cam;
 
 
 

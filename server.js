@@ -16,7 +16,7 @@ const Webcam = NodeWebcam.create({
 });
 
 const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output";
-let rtspOutputUrl = "rtsp://localhost:8554/live/stream"; 
+const rtspOutputUrl = "rtsp://localhost:8554/live/stream"; 
 
 let frameCount = 0;
 let framePaths = [];
@@ -110,6 +110,13 @@ setInterval(() => {
   Webcam.clear();
   streamFrames();
 }, 10000);
+
+
+
+
+
+
+
 
 
 

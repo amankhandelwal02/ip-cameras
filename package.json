@@ -48,6 +48,7 @@
     "request": "^2.88.2",
     "rtsp-client": "^1.4.5",
     "rtsp-ffmpeg": "^0.0.17",
+    "rtsp-server": "^1.2.2",
     "rtsp-stream": "^1.0.0",
     "server": "^1.0.38",
     "simple-peer": "^9.11.1",
