@@ -1,8 +1,7 @@
 import { Inter } from "next/font/google";
-// import MainHome from "../components/mainHome";
+import MainHome from "../components/mainHome";
 // import PopUp from "../components/popUp";
 import { useState } from "react";
-import Homee from "../components/home";
 // import Cam from "../components/cam";
 // import { FiPlus } from "react-icons/Fi";
 // import Sidebar from "../components/sidebar";
@@ -16,7 +15,7 @@ export default function Home() {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   return (
     <div className="font-extrabold">
-    <Homee/>
+    <MainHome  setVisible={setVisible} camName={camName}/>
     {/* <Cam1/> */}
       {/* {!isButtonClicked ? (
         <MainHome setVisible={setVisible} camName={camName} />
