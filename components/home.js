@@ -27,7 +27,7 @@ const Homee = ({setVisible}) => {
       </div>
       <ReactPlayer
         // url="/earth.mp4"
-        url={"rtsp://localhost:8557/stream1"}
+        url={"rtsp://localhost:8080/home/aman/Desktop/workspace/ip_cameras/output/earth.mp4"}
         playing={true}
         controls={true}
         width="100%"
