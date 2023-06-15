@@ -1,11 +1,9 @@
 const express = require("express");
 const app = express();
 const NodeWebcam = require("node-webcam");
-const fs = require("fs");
 const { spawn } = require("child_process");
-const outputPath = "./output";
-const rtspOutputUrl = "rtsp://localhost:8554/stream";
-const videoPath = "./output/output.mp4";
+const WebSocket = require("ws");
+const RtspServer = require("node-rtsp-stream");
 
 // Configure webcam
 const Webcam = NodeWebcam.create({
@@ -18,63 +16,85 @@ const Webcam = NodeWebcam.create({
   verbose: false,
 });
 
-// Start capturing and saving image frames
-function captureFrame() {
-  const filePath = `${outputPath}/output.jpg`;
+// WebSocket server for streaming
+const wss = new WebSocket.Server({ port: 8080 });
+
+// Capture and stream frames
+function captureAndStream() {
+  const filePath = "./output/output.jpg";
 
   Webcam.capture(filePath, (err, data) => {
     if (!err) {
-      console.log("Image captured:", data);
-      captureFrame(); // Recursively capture next frame
+      // Stream the captured frame to connected clients
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(data);
+        }
+      });
+
+      // Capture and stream the next frame
+      captureAndStream();
     } else {
       console.log("Error capturing image:", err);
     }
   });
 }
 
-// Convert captured image frames to MP4 video
-function convertToVideo() {
+// Convert captured frames to RTSP stream using FFmpeg
+function convertToRtspStream() {
   const ffmpegProcess = spawn("ffmpeg", [
     "-y",
-    "-framerate",
+    "-loop",
     "1",
     "-i",
-    `${outputPath}/output_%d.jpg`,
+    "./output/output.jpg",
     "-c:v",
     "libx264",
-    "-pix_fmt",
-    "yuv420p",
-    videoPath,
+    "-preset",
+    "ultrafast",
+    "-tune",
+    "zerolatency",
+    "-vf",
+    "fps=30",
+    "-f",
+    "rtsp",
+    "rtsp://localhost:8554/live/stream",
   ]);
 
   ffmpegProcess.on("exit", () => {
-    console.log("Video conversion completed:", videoPath);
-    captureFrame(); // Start capturing frames again
+    console.log("RTSP streaming completed");
   });
 }
 
-// Create output directory if it doesn't exist
-if (!fs.existsSync(outputPath)) {
-  fs.mkdirSync(outputPath);
-}
-
-// Start capturing frames and converting to video
-captureFrame();
-convertToVideo();
+// Start capturing and streaming frames
+captureAndStream();
+convertToRtspStream();
 
 // Serve the RTSP stream page
 app.get("/", (req, res) => {
   res.send(`
-    <video src="${rtspOutputUrl}" controls autoplay></video>
+    <script src="https://cdn.jwplayer.com/libraries/dzVwUqoA.js"></script>
+    <div id="player"></div>
+    <script>
+      jwplayer("player").setup({
+        file: "rtsp://localhost:8554/live/stream",
+        type: "rtmp/mp4",
+        autostart: true,
+        width: "640",
+        height: "360",
+      });
+    </script>
   `);
 });
 
-// Serve the converted video file as RTSP stream
-app.get("/stream", (req, res) => {
-  const stream = fs.createReadStream(videoPath);
-  stream.pipe(res);
+// Start the server
+const server = app.listen(3000, () => {
+  console.log("Server is running on port 3000");
 });
 
-app.listen(8554, () => {
-  console.log("RTSP server is running on port 8554");
+// Start the RTSP server
+const rtspServer = new RtspServer({
+  serverPort: 8554,
+  clientPort: 8000,
 });
+rtspServer.start();
