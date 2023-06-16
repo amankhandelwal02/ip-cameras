@@ -1,3 +1,53 @@
+const rtsp = require('rtsp-server');
+const fs = require('fs');
+
+const videoPath = '/home/aman/Desktop/workspace/ip_cameras/output/earth.mp4'; // Replace with the path to your video file
+
+const server = rtsp.createServer(function (req, res) {
+  console.log(req.method, req.url);
+
+  switch (req.method) {
+    case 'OPTIONS':
+      res.setHeader('Public', 'OPTIONS, DESCRIBE, SETUP, PLAY');
+      res.end();
+      break;
+    case 'DESCRIBE':
+      var sdp = generateSdp();
+      res.setHeader('Content-Type', 'application/sdp');
+      res.setHeader('Content-Length', sdp.length);
+      res.end(sdp);
+      break;
+    case 'SETUP':
+      // Handle SETUP request if needed
+      res.end();
+      break;
+    case 'PLAY':
+      var videoStream = fs.createReadStream(videoPath);
+      videoStream.pipe(res);
+      break;
+    default:
+      res.statusCode = 501;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // Not supported
+  }
+});
+
+server.listen(8554, function () {
+  var port = server.address().port;
+  console.log('RTSP server is running on port:', port);
+});
+
+function generateSdp() {
+  var sdp = 'v=0\r\n';
+  sdp += 'o=- 0 0 IN IP4 127.0.0.1\r\n';
+  sdp += 's=RTSP Server\r\n';
+  sdp += 't=0 0\r\n';
+  sdp += 'c=IN IP4 127.0.0.1\r\n';
+  sdp += 'm=video 0 RTP/AVP 96\r\n';
+  sdp += 'a=rtpmap:96 H264/90000\r\n';
+  sdp += 'a=control:stream1\r\n';
+  return sdp;
+}
+
+
 // const mediasoup = require('mediasoup');
 // const fs = require('fs');
 // const { Readable } = require('stream');
@@ -316,54 +366,4 @@
 //   });
 
 //   return videoStream;
-
-const rtsp = require('rtsp-server');
-const fs = require('fs');
-
-const videoPath = '/home/aman/Desktop/workspace/ip_cameras/output/earth.mp4'; // Replace with the path to your video file
-
-const server = rtsp.createServer(function (req, res) {
-  console.log(req.method, req.url);
-
-  switch (req.method) {
-    case 'OPTIONS':
-      res.setHeader('Public', 'OPTIONS, DESCRIBE, SETUP, PLAY');
-      res.end();
-      break;
-    case 'DESCRIBE':
-      var sdp = generateSdp();
-      res.setHeader('Content-Type', 'application/sdp');
-      res.setHeader('Content-Length', sdp.length);
-      res.end(sdp);
-      break;
-    case 'SETUP':
-      // Handle SETUP request if needed
-      res.end();
-      break;
-    case 'PLAY':
-      var videoStream = fs.createReadStream(videoPath);
-      videoStream.pipe(res);
-      break;
-    default:
-      res.statusCode = 501;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // Not supported
-  }
-});
-
-server.listen(8554, function () {
-  var port = server.address().port;
-  console.log('RTSP server is running on port:', port);
-});
-
-function generateSdp() {
-  var sdp = 'v=0\r\n';
-  sdp += 'o=- 0 0 IN IP4 127.0.0.1\r\n';
-  sdp += 's=RTSP Server\r\n';
-  sdp += 't=0 0\r\n';
-  sdp += 'c=IN IP4 127.0.0.1\r\n';
-  sdp += 'm=video 0 RTP/AVP 96\r\n';
-  sdp += 'a=rtpmap:96 H264/90000\r\n';
-  sdp += 'a=control:stream1\r\n';
-  return sdp;
-}
-
 
