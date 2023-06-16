@@ -1,3 +1,127 @@
+// const express = require('express');
+// const fs = require('fs');
+// const path = require('path');
+// const { spawn } = require('child_process');
+// const NodeWebcam = require('node-webcam');
+
+// const app = express();
+// const outputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.jpg';
+// const hlsOutputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/hls/stream.m3u8';
+// const rtspInputUrl = 'rtsp://localhost:8554/live/stream';
+
+// const Webcam = NodeWebcam.create({
+//   device: 'FaceTime HD Camera',
+//   width: 1280,
+//   height: 720,
+//   quality: 80,
+//   delay: 0,
+//   output: 'jpeg',
+//   verbose: false,
+// });
+
+// let frameCount = 0;
+// let framePaths = [];
+
+// // Start capturing and saving image frames
+// function captureFrame() {
+//   const filePath = path.join(outputPath, `output_${frameCount}.jpg`);
+
+//   Webcam.capture(filePath, (err, data) => {
+//     if (!err) {
+//       console.log("Image captured:", data);
+//       framePaths.push(filePath);
+//       frameCount++;
+//       console.log("Frame count:", frameCount);
+//       captureFrame();
+//     } else {
+//       console.log("Error capturing image:", err);
+//     }
+//   });
+// }
+
+// // Stream captured frames using FFmpeg and convert to RTSP
+// function transcodeToRTSP() {
+//   const ffmpegProcess = spawn('ffmpeg', [
+//     '-y',
+//     '-framerate',
+//     '1',
+//     '-i',
+//     path.join(outputPath, 'output_%d.jpg'),
+//     '-c:v',
+//     'libx264',
+//     '-pix_fmt',
+//     'yuv420p',
+//     '-f',
+//     'rtsp',
+//     rtspInputUrl,
+//   ]);
+
+//   ffmpegProcess.on('exit', () => {
+//     console.log('RTSP streaming completed');
+//   });
+// }
+
+// // Generate HLS files from the RTSP stream
+// function transcodeToHLS() {
+//   const ffmpegProcess = spawn('ffmpeg', [
+//     '-y',
+//     '-i',
+//     rtspInputUrl,
+//     '-c:v',
+//     'copy',
+//     '-hls_time',
+//     '2',
+//     '-hls_list_size',
+//     '10',
+//     '-hls_wrap',
+//     '10',
+//     '-start_number',
+//     '1',
+//     '-hls_segment_filename',
+//     path.join(hlsOutputPath, 'segment_%03d.ts'),
+//     path.join(hlsOutputPath, 'stream.m3u8'),
+//   ]);
+
+//   ffmpegProcess.on('exit', () => {
+//     console.log('HLS conversion completed');
+//   });
+// }
+
+// // Serve the HLS stream to the client
+// app.use(express.static(hlsOutputPath));
+
+// // Start capturing image frames
+// if (!fs.existsSync(outputPath) && !fs.existsSync(hlsOutputPath)) {
+//   fs.mkdirSync(outputPath);
+//   fs.mkdirSync(hlsOutputPath);
+//   captureFrame();
+// }
+
+// // Start transcoding frames to RTSP
+// transcodeToRTSP();
+
+// // Start transcoding RTSP to HLS
+// if (!fs.existsSync(hlsOutputPath)) {
+//   fs.mkdirSync(hlsOutputPath);
+//   transcodeToHLS();
+// }
+
+// // Start the server
+// const port = 3001;
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
+
+
+
+
+
+
+
+
+
+
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
