@@ -1,115 +1,117 @@
-const express = require("express");
-const app = express();
-const fs = require("fs");
-const path = require("path");
-const { spawn } = require("child_process");
-const NodeWebcam = require("node-webcam");
+// const express = require("express");
+// const app = express();
+// const fs = require("fs");
+// const path = require("path");
+// const { spawn } = require("child_process");
+// const NodeWebcam = require("node-webcam");
 
-const Webcam = NodeWebcam.create({
-  device: "FaceTime HD Camera",
-  width: 1280,
-  height: 720,
-  quality: 80,
-  delay: 0,
-  output: "jpeg",
-  verbose: false,
-});
+// const Webcam = NodeWebcam.create({
+//   device: "FaceTime HD Camera",
+//   width: 1280,
+//   height: 720,
+//   quality: 80,
+//   delay: 0,
+//   output: "jpeg",
+//   verbose: false,
+// });
 
-const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output";
-const rtspOutputUrl = "rtsp://localhost:8554/live/stream"; 
+// const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output";
+// const rtspOutputUrl = "rtsp://localhost:8554/live/stream"; 
 
-let frameCount = 0;
-let framePaths = [];
+// let frameCount = 0;
+// let framePaths = [];
 
-// Start capturing and saving image frames
-function captureFrame() {
-  const filePath = path.join(outputPath, `output_${frameCount}.jpg`);
+// // Start capturing and saving image frames
+// function captureFrame() {
+//   const filePath = path.join(outputPath, `output_${frameCount}.jpg`);
 
-  Webcam.capture(filePath, (err, data) => {
-    if (!err) {
-      console.log("Image captured:", data);
-      framePaths.push(filePath);
-      frameCount++;
-      console.log("Frame count:", frameCount);
-      captureFrame();
-    } else {
-      console.log("Error capturing image:", err);
-    }
-  });
-}
+//   Webcam.capture(filePath, (err, data) => {
+//     if (!err) {
+//       console.log("Image captured:", data);
+//       framePaths.push(filePath);
+//       frameCount++;
+//       console.log("Frame count:", frameCount);
+//       captureFrame();
+//     } else {
+//       console.log("Error capturing image:", err);
+//     }
+//   });
+// }
 
-// Stream captured frames using FFmpeg
-function streamFrames() {
-  const ffmpegProcess = spawn("ffmpeg", [
-    "-y",
-    "-framerate",
-    "1",
-    "-i",
-    path.join(outputPath, "output_%d.jpg"),
-    "-c:v",
-    "libx264",
-    "-pix_fmt",
-    "yuv420p",
-    "-f",
-    "rtsp",
-    rtspOutputUrl,
-  ]);
+// // Stream captured frames using FFmpeg
+// function streamFrames() {
+//   const ffmpegProcess = spawn("ffmpeg", [
+//     "-y",
+//     "-framerate",
+//     "1",
+//     "-i",
+//     path.join(outputPath, "output_%d.jpg"),
+//     "-c:v",
+//     "libx264",
+//     "-pix_fmt",
+//     "yuv420p",
+//     "-f",
+//     "rtsp",
+//     rtspOutputUrl,
+//   ]);
 
-  ffmpegProcess.on("exit", () => {
-    console.log("RTSP streaming completed:", rtspOutputUrl);
+//   ffmpegProcess.on("exit", () => {
+//     console.log("RTSP streaming completed:", rtspOutputUrl);
 
-    for (const framePath of framePaths) {
-      if (fs.existsSync(framePath)) {
-        fs.unlinkSync(framePath);
-      }
-    }
+//     for (const framePath of framePaths) {
+//       if (fs.existsSync(framePath)) {
+//         fs.unlinkSync(framePath);
+//       }
+//     }
 
-    frameCount = 0;
-    framePaths = [];
+//     frameCount = 0;
+//     framePaths = [];
 
-    captureFrame();
-  });
+//     captureFrame();
+//   });
 
-  ffmpegProcess.on("exit", () => {
-    console.log("Video conversion completed:", outputPath);
+//   ffmpegProcess.on("exit", () => {
+//     console.log("Video conversion completed:", outputPath);
 
-    for (const framePath of framePaths) {
-      if (fs.existsSync(framePath)) {
-        fs.unlinkSync(framePath);
-      }
-    }
+//     for (const framePath of framePaths) {
+//       if (fs.existsSync(framePath)) {
+//         fs.unlinkSync(framePath);
+//       }
+//     }
 
-    frameCount = 0;
-    framePaths = [];
+//     frameCount = 0;
+//     framePaths = [];
 
-    captureFrame();
-  });
-}
+//     captureFrame();
+//   });
+// }
 
-// Define the API endpoint to retrieve the RTSP URL
-app.get("/api/rtsp-url", (req, res) => {
-  res.json({ rtspUrl: rtspOutputUrl });
-});
+// // const hlsConvertedVideo=spawn("ffmpeg","-i","ad1.mp4" ,"-strict", "-2", "-profile:v", "baseline" ,"-level", "3.0" ,"-start_number" ,"0" ,"-hls_list_size" ,"0" ,"-hls_segment_filename", 'sample-%06d.ts' ,"-f" ,"hls" ,"sample.m3u8" );
 
-// Start capturing image frames
-if (!fs.existsSync(outputPath)) {
-  fs.mkdirSync(outputPath);
-  captureFrame();
-}
+// // Define the API endpoint to retrieve the RTSP URL
+// app.get("/api/rtsp-url", (req, res) => {
+//   res.json({ rtspUrl: rtspOutputUrl });
+// });
 
-// Start streaming frames via RTSP
-streamFrames();
+// // Start capturing image frames
+// if (!fs.existsSync(outputPath)) {
+//   fs.mkdirSync(outputPath);
+//   captureFrame();
+// }
 
-// Start the server
-app.listen(3001, () => {
-  console.log("Server is running on port 3001");
-});
+// // Start streaming frames via RTSP
+// streamFrames();
 
-// Stop capturing frames and convert them into a video every 10 seconds
-setInterval(() => {
-  Webcam.clear();
-  streamFrames();
-}, 10000);
+// // Start the server
+// app.listen(3001, () => {
+//   console.log("Server is running on port 3001");
+// });
+
+// // Stop capturing frames and convert them into a video every 10 seconds
+// setInterval(() => {
+//   Webcam.clear();
+//   streamFrames();
+// }, 10000);
 
 
 
@@ -253,92 +255,98 @@ setInterval(() => {
 
 
 
-// const NodeWebcam = require("node-webcam");
-// const fs = require("fs");
-// const path = require("path");
-// const { spawn } = require("child_process");
+const NodeWebcam = require("node-webcam");
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
 
-// const Webcam = NodeWebcam.create({
-//   device: "FaceTime HD Camera",
-//   width: 1280,
-//   height: 720,
-//   quality: 80,
-//   delay: 0,
-//   output: "jpeg",
-//   verbose: false,
-// });
+const Webcam = NodeWebcam.create({
+  device: "FaceTime HD Camera",
+  width: 1280,
+  height: 720,
+  quality: 80,
+  delay: 0,
+  output: "jpeg",
+  verbose: false,
+});
 
-// const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
-// const videoOutputPath =
-//   "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4"; // Update with the desired video output path
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
+const videoOutputPath =
+  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4"; // Update with the desired video output path
 
-// let frameCount = 0;
-// let framePaths = [];
+let frameCount = 0;
+let framePaths = [];
 
-// // Start capturing and saving image frames
-// function captureFrame() {
-//   const filePath = path.join(outputPath, `output_${frameCount}.jpg`); // Use a unique file name for each frame
+// Start capturing and saving image frames
+function captureFrame() {
+  const filePath = path.join(outputPath, `output_${frameCount}.jpg`); // Use a unique file name for each frame
 
-//   Webcam.capture(filePath, (err, data) => {
-//     if (!err) {
-//       console.log("Image captured:", data);
-//       framePaths.push(filePath);
-//       frameCount++;
-//       console.log("Frame count:", frameCount);
-//       captureFrame(); // Capture the next frame
-//     } else {
-//       console.log("Error capturing image:", err);
-//     }
-//   });
-// }
+  Webcam.capture(filePath, (err, data) => {
+    if (!err) {
+      console.log("Image captured:", data);
+      framePaths.push(filePath);
+      frameCount++;
+      console.log("Frame count:", frameCount);
+      captureFrame(); // Capture the next frame
+    } else {
+      console.log("Error capturing image:", err);
+    }
+  });
+}
 
-// // Convert captured frames into an MP4 video
-// function convertToVideo() {
-//   const ffmpegProcess = spawn("ffmpeg", [
-//     "-y",
-//     "-framerate",
-//     1, // Remove the -r option
-//     "-i",
-//     path.join(outputPath, "output_%d.jpg"),
-//     "-c:v",
-//     "libx264",
-//     "-pix_fmt",
-//     "yuv420p",
-//     "-t",
-//     `${frameCount}`, // Set the duration of the video based on the number of frames captured
-//     videoOutputPath,
-//   ]);
+// Convert captured frames into an MP4 video
+function convertToVideo() {
+  const ffmpegProcess = spawn("ffmpeg", [
+    "-y",
+    "-framerate",
+    1, // Remove the -r option
+    "-i",
+    path.join(outputPath, "output_%d.jpg"),
+    "-c:v",
+    "libx264",
+    "-pix_fmt",
+    "yuv420p",
+    "-t",
+    `${frameCount}`, // Set the duration of the video based on the number of frames captured
+    videoOutputPath,
+  ]);
 
-  // ffmpegProcess.on("exit", () => {
-  //   console.log("Video conversion completed:", videoOutputPath);
+  ffmpegProcess.on("exit", () => {
+    console.log("Video conversion completed:", videoOutputPath);
 
-  //   // Cleanup: Remove the captured image files
-  //   for (const framePath of framePaths) {
-  //     if (fs.existsSync(framePath)) {
-  //       fs.unlinkSync(framePath);
-  //     }
-  //   }
+    // Cleanup: Remove the captured image files
+    for (const framePath of framePaths) {
+      if (fs.existsSync(framePath)) {
+        fs.unlinkSync(framePath);
+      }
+    }
 
-  //   // Clear the frame count and paths to start capturing new frames
-  //   frameCount = 0;
-  //   framePaths = [];
+    // Clear the frame count and paths to start capturing new frames
+    frameCount = 0;
+    framePaths = [];
 
-  //   // Start capturing new frames
-  //   captureFrame();
-  // });
-// }
-
-// // Start capturing image frames
-// if (!fs.existsSync(outputPath)) {
-//   fs.mkdirSync(outputPath);
-//   captureFrame();
-// }
+    // Start capturing new frames
+    captureFrame();
+  });
+}
+function convertToHLSVideo() {
+const hlsConvertedVideo = spawn("ffmpeg",["-i",`${videoOutputPath}` ,"-strict", "-2", "-profile:v", "baseline" ,"-level", "3.0" ,"-start_number" ,"0" ,"-hls_list_size" ,"0" ,"-hls_segment_filename", 'sample-%06d.ts' ,"-f" ,"hls" ,"sample.m3u8"] );
+hlsConvertedVideo.on("exit", () => {
+  console.log("HLS Video conversion completed:");
+})
+}
+// Start capturing image frames
+if (!fs.existsSync(outputPath)) {
+  fs.mkdirSync(outputPath);
+  captureFrame();
+}
 
 // Stop capturing frames and convert them into a video every 10 seconds
-// setInterval(() => {
-//   Webcam.clear();
-//   convertToVideo();
-// }, 10000); // Convert frames to video every 10 seconds (adjust the duration as needed)
+setInterval(() => {
+  Webcam.clear();
+  convertToVideo();
+  convertToHLSVideo();
+}, 10000); // Convert frames to video every 10 seconds (adjust the duration as needed)
 
 
 

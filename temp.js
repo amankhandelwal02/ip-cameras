@@ -165,28 +165,7 @@ function captureFrame() {
 
 // Stream captured frames using FFmpeg and convert to HLS
 function transcodeToHLS() {
-  const ffmpegProcess = spawn('ffmpeg', [
-    '-y',
-    '-framerate',
-    '1',
-    '-i',
-    path.join(outputPath, 'output_%d.jpg'),
-    '-c:v',
-    'libx264',
-    '-pix_fmt',
-    'yuv420p',
-    '-f',
-    'hls',
-    '-hls_time',
-    '2',
-    '-hls_list_size',
-    '10',
-    '-hls_wrap',
-    '10',
-    '-start_number',
-    '1',
-    path.join(hlsOutputPath, 'stream.m3u8'),
-  ]);
+  const ffmpegProcess = spawn("ffmpeg -i input.mp4 -profile:v baseline -level 3.0 -s 640x360 -start_number 0 -hls_time 10 -hls_list_size 0 -f hls index.m3u8");
 
   ffmpegProcess.on('exit', () => {
     console.log('HLS conversion completed');
