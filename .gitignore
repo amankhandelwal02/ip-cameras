@@ -7,6 +7,8 @@ logs/
 # Ignore build output
 build/
 
+.next/
+
 # Ignore environment variables file
 .env
 
