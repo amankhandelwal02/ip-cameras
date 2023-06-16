@@ -2,6 +2,7 @@ import React from "react";
 import Camera from "../assests/security_camera.png";
 // import { FiPlus } from "react-icons/Fi";
 import ReactPlayer from 'react-player';
+import MyVideoComponent from "./MyVideoComponent";
 
 const Homee = ({setVisible}) => {
   return (
@@ -25,14 +26,15 @@ const Homee = ({setVisible}) => {
       >
        {/* <FiPlus className="text-2xl"/> */}
       </div>
-      <ReactPlayer
+      {/* <ReactPlayer
         // url="/earth.mp4"
         url={"rtsp://localhost:8080/home/aman/Desktop/workspace/ip_cameras/output/earth.mp4"}
         playing={true}
         controls={true}
         width="100%"
         height="auto"
-      />
+      /> */}
+      <MyVideoComponent />
     </div>
   );
 };
