@@ -1,6 +1,6 @@
 import React from "react";
 import Background from "../assests/sidebar-2.jpg";
-import { FaVideo } from "react-icons/Fa";
+// import { FaVideo } from "react-icons/Fa";
 
 const Sidebar = ({ camName }) => {
   return (
@@ -20,7 +20,7 @@ const Sidebar = ({ camName }) => {
         {camName.map((elem,index) => (
           <>
             <div className="flex justify-start items-center px-2">
-              <FaVideo className="text-sm text-slate-300"/>
+              {/* <FaVideo className="text-sm text-slate-300"/> */}
               <p className="text-slate-300 font-thin text-lg space-y-10 px-2 ">
                 {elem}
               </p>

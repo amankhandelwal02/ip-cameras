@@ -112,16 +112,6 @@
 //   console.log(`Server is running on port ${port}`);
 // });
 
-
-
-
-
-
-
-
-
-
-
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -130,12 +120,12 @@ const NodeWebcam = require('node-webcam');
 const rtsp = require('rtsp-server');
 
 const app = express();
-const outputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output';
-const hlsOutputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/hls';
+const outputPath = '/home/aman/Desktop/workspace/ip_cameras/output';
+const hlsOutputPath = '/home/aman/Desktop/workspace/ip_cameras/hls';
 const rtspOutputUrl = 'rtsp://localhost:8554/live/stream';
 
 const Webcam = NodeWebcam.create({
-  device: 'FaceTime HD Camera',
+  device: '/dev/video0',
   width: 1280,
   height: 720,
   quality: 80,
@@ -192,6 +182,8 @@ function transcodeToHLS() {
     console.log('HLS conversion completed');
   });
 }
+
+
 
 // Serve the HLS stream to handle RTSP requests
 app.use(express.static(hlsOutputPath));

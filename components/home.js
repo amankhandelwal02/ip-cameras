@@ -1,10 +1,10 @@
 import React from "react";
 import CameraImage from "../assests/security_camera.png";
-import { FiPlus } from "react-icons/Fi";
-import ReactPlayer from 'react-player';
-import MyVideoComponent from "./MyVideoComponent";
+// import { FiPlus } from "react-icons/Fi";
+import Cam from "./cam";
 
 const Homee = ({ setVisible }) => {
+
   return (
     <div className="flex-1 w-60 bg-slate-900 font-light opacity-80 px-5 py-5 ">
       <div className="border-slate-400 h-80 flex justify-center items-center bg-slate-800 rounded-md flex-1">
@@ -24,17 +24,9 @@ const Homee = ({ setVisible }) => {
         className="box-content cursor-pointer duration-700 mx-auto my-10 flex items-center justify-center w-10 h-10 rounded-full p-2 bg-teal-500 mix-blend-hard-light"
         onClick={() => setVisible(true)}
       >
-        <FiPlus className="text-2xl" />
+        {/* <FiPlus className="text-2xl" /> */}
       </div>
-      {/* <ReactPlayer
-        // url="/earth.mp4"
-        url={"rtsp://localhost:8080/home/aman/Desktop/workspace/ip_cameras/output/earth.mp4"}
-        playing={true}
-        controls={true}
-        width="30%"
-        height="auto"
-      /> */}
-      <MyVideoComponent />
+      <Cam />
     </div>
   );
 };
