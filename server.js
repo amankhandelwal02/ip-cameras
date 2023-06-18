@@ -1,3 +1,115 @@
+const NodeWebcam = require("node-webcam");
+const fs = require("fs");
+const path = require("path");
+const { spawn } = require("child_process");
+
+const Webcam = NodeWebcam.create({
+  device: "FaceTime HD Camera",
+  width: 1280,
+  height: 720,
+  quality: 80,
+  delay: 0,
+  output: "jpeg",
+  verbose: false,
+});
+
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
+const videoOutputPath =
+  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4"; // Update with the desired video output path
+
+let frameCount = 0;
+let framePaths = [];
+
+// Start capturing and saving image frames
+function captureFrame() {
+  const filePath = path.join(outputPath, `output_${frameCount}.jpg`); // Use a unique file name for each frame
+
+  Webcam.capture(filePath, (err, data) => {
+    if (!err) {
+      console.log("Image captured:", data);
+      framePaths.push(filePath);
+      frameCount++;
+      console.log("Frame count:", frameCount);
+      captureFrame(); // Capture the next frame
+    } else {
+      console.log("Error capturing image:", err);
+    }
+  });
+}
+
+// Convert captured frames into an MP4 video
+function convertToVideo() {
+  const ffmpegProcess = spawn("ffmpeg", [
+    "-y",
+    "-framerate",
+    1, // Remove the -r option
+    "-i",
+    path.join(outputPath, "output_%d.jpg"),
+    "-c:v",
+    "libx264",
+    "-pix_fmt",
+    "yuv420p",
+    "-t",
+    `${frameCount}`, // Set the duration of the video based on the number of frames captured
+    videoOutputPath,
+  ]);
+
+  ffmpegProcess.on("exit", () => {
+    console.log("Video conversion completed:", videoOutputPath);
+
+    // Cleanup: Remove the captured image files
+    for (const framePath of framePaths) {
+      if (fs.existsSync(framePath)) {
+        fs.unlinkSync(framePath);
+      }
+    }
+
+    // Clear the frame count and paths to start capturing new frames
+    frameCount = 0;
+    framePaths = [];
+
+    // Start capturing new frames
+    captureFrame();
+  });
+}
+function convertToHLSVideo() {
+const hlsConvertedVideo = spawn("ffmpeg",["-i",`${videoOutputPath}` ,"-strict", "-2", "-profile:v", "baseline" ,"-level", "3.0" ,"-start_number" ,"0" ,"-hls_list_size" ,"0" ,"-hls_segment_filename", 'sample-%06d.ts' ,"-f" ,"hls" ,"sample.m3u8"] );
+hlsConvertedVideo.on("exit", () => {
+  console.log("HLS Video conversion completed:");
+})
+}
+// Start capturing image frames
+if (!fs.existsSync(outputPath)) {
+  fs.mkdirSync(outputPath);
+  captureFrame();
+}
+
+// Stop capturing frames and convert them into a video every 10 seconds
+setInterval(() => {
+  Webcam.clear();
+  convertToVideo();
+  convertToHLSVideo();
+}, 10000); // Convert frames to video every 10 seconds (adjust the duration as needed)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // const express = require("express");
 // const app = express();
 // const fs = require("fs");
@@ -237,116 +349,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const NodeWebcam = require("node-webcam");
-const fs = require("fs");
-const path = require("path");
-const { spawn } = require("child_process");
-
-const Webcam = NodeWebcam.create({
-  device: "FaceTime HD Camera",
-  width: 1280,
-  height: 720,
-  quality: 80,
-  delay: 0,
-  output: "jpeg",
-  verbose: false,
-});
-
-const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output"; // Update with the desired output directory
-const videoOutputPath =
-  "/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output/output.mp4"; // Update with the desired video output path
-
-let frameCount = 0;
-let framePaths = [];
-
-// Start capturing and saving image frames
-function captureFrame() {
-  const filePath = path.join(outputPath, `output_${frameCount}.jpg`); // Use a unique file name for each frame
-
-  Webcam.capture(filePath, (err, data) => {
-    if (!err) {
-      console.log("Image captured:", data);
-      framePaths.push(filePath);
-      frameCount++;
-      console.log("Frame count:", frameCount);
-      captureFrame(); // Capture the next frame
-    } else {
-      console.log("Error capturing image:", err);
-    }
-  });
-}
-
-// Convert captured frames into an MP4 video
-function convertToVideo() {
-  const ffmpegProcess = spawn("ffmpeg", [
-    "-y",
-    "-framerate",
-    1, // Remove the -r option
-    "-i",
-    path.join(outputPath, "output_%d.jpg"),
-    "-c:v",
-    "libx264",
-    "-pix_fmt",
-    "yuv420p",
-    "-t",
-    `${frameCount}`, // Set the duration of the video based on the number of frames captured
-    videoOutputPath,
-  ]);
-
-  ffmpegProcess.on("exit", () => {
-    console.log("Video conversion completed:", videoOutputPath);
-
-    // Cleanup: Remove the captured image files
-    for (const framePath of framePaths) {
-      if (fs.existsSync(framePath)) {
-        fs.unlinkSync(framePath);
-      }
-    }
-
-    // Clear the frame count and paths to start capturing new frames
-    frameCount = 0;
-    framePaths = [];
-
-    // Start capturing new frames
-    captureFrame();
-  });
-}
-function convertToHLSVideo() {
-const hlsConvertedVideo = spawn("ffmpeg",["-i",`${videoOutputPath}` ,"-strict", "-2", "-profile:v", "baseline" ,"-level", "3.0" ,"-start_number" ,"0" ,"-hls_list_size" ,"0" ,"-hls_segment_filename", 'sample-%06d.ts' ,"-f" ,"hls" ,"sample.m3u8"] );
-hlsConvertedVideo.on("exit", () => {
-  console.log("HLS Video conversion completed:");
-})
-}
-// Start capturing image frames
-if (!fs.existsSync(outputPath)) {
-  fs.mkdirSync(outputPath);
-  captureFrame();
-}
-
-// Stop capturing frames and convert them into a video every 10 seconds
-setInterval(() => {
-  Webcam.clear();
-  convertToVideo();
-  convertToHLSVideo();
-}, 10000); // Convert frames to video every 10 seconds (adjust the duration as needed)
 
 
 
