@@ -8,7 +8,7 @@ export default async (req, res) => {
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders();
   
-    const filePath = '/home/aman/Desktop/workspace/ip_cameras/hls/stream.m3u8'; // Update with the correct file path
+    const filePath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/hls/stream.m3u8'; // Update with the correct file path
   
     const watcher = fs.watch(filePath, (event) => {
       if (event === 'change') {
