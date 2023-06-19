@@ -1,11 +1,10 @@
 import { Inter } from "next/font/google";
 import MainHome from "../components/mainHome";
-// import PopUp from "../components/popUp";
+import PopUp from "../components/popUp";
 import { useState } from "react";
-// import Cam from "../components/cam";
+import Cam from "../components/cam";
 // import { FiPlus } from "react-icons/Fi";
-// import Sidebar from "../components/sidebar";
-// import Cam1 from "../components/cam1";
+import Sidebar from "../components/sidebar";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -15,9 +14,8 @@ export default function Home() {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   return (
     <div className="font-extrabold">
-    <MainHome  setVisible={setVisible} camName={camName}/>
-    {/* <Cam1/> */}
-      {/* {!isButtonClicked ? (
+    
+      {!isButtonClicked ? (
         <MainHome setVisible={setVisible} camName={camName} />
       ) : (
         <div className="flex">
@@ -32,7 +30,7 @@ export default function Home() {
             <div
               className="fixed bottom-1 right-[600px] box-content cursor-pointer duration-700 mx-auto my-10 flex items-center justify-center w-10 h-10 rounded-full p-2 bg-green-900"
               onClick={() => setVisible(true)}>
-              {/* <FiPlus className="text-2xl" /> 
+              {/* <FiPlus className="text-2xl" /> */}
             </div>
           </div>
         </div>
@@ -46,7 +44,7 @@ export default function Home() {
           isButtonClicked={isButtonClicked}
           setIsButtonClicked={setIsButtonClicked}
         />
-      )} */}
+      )}
     </div>
   );
 }

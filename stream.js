@@ -171,12 +171,12 @@ const cors = require('cors'); // Import the cors package
 
 const app = express();
 app.use(cors()); // Enable CORS for all routes
-const outputPath = '/home/aman/Desktop/workspace/ip_cameras/output';
-const hlsOutputPath = '/home/aman/Desktop/workspace/ip_cameras/hls';
+const outputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/output';
+const hlsOutputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip-cameras/hls';
 const rtspOutputUrl = 'rtsp://localhost:8554/live/stream';
 
 const Webcam = NodeWebcam.create({
-  device: '/dev/video0',
+  device: 'FaceTime HD Camera',
   width: 1280,
   height: 720,
   quality: 80,

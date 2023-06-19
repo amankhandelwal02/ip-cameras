@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 // import { ImCross } from "react-icons/Im";
 // import { BsCheck } from "react-icons/Bs";
 import axios from "axios";
-import Cam from "./cam";
 
 const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked}) => {
   // console.log("visible", visible);
