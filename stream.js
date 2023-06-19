@@ -280,7 +280,7 @@ if (!fs.existsSync(hlsOutputPath)) {
 }
 
 // Delay the HLS conversion process to ensure frames are available
-setTimeout(transcodeToHLS, 2000);
+setTimeout(transcodeToHLS, 1000);
 
 // Start the server
 const port = 3001;
