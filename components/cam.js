@@ -3,20 +3,6 @@ import axios from "axios";
 import ReactPlayer from 'react-player';
 
 const Cam = () => {
-  // const [streamUrl, setStreamUrl] = React.useState('');
-
-  // React.useEffect(() => {
-  //   fetch('/api/hls')
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log("data: " + data.streamUrl)
-  //       setStreamUrl(data.streamUrl);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching stream URL:', error);
-  //     });
-  // }, []);
-
   const [active, setActive] = useState("");
 
   setTimeout(() => {
@@ -25,19 +11,6 @@ const Cam = () => {
 
   return (
     <div>
-      {/* {streamUrl && streamUrl.length > 0 && (
-        <>
-          <h1>Stream Viewer</h1>
-          <ReactPlayer
-            url={streamUrl}
-            playing={true}
-            controls={true}
-            muted={true}
-            width="30%"
-            height="auto"
-          />
-        </>
-      )} */}
 
       {active && (
         <>
@@ -58,4 +31,3 @@ const Cam = () => {
 };
 
 export default Cam;
-
