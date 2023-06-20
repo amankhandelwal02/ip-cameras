@@ -10,6 +10,7 @@ const Cam = () => {
   }, 2000)
 
   return (
+    
     <div>
 
       {active && (
