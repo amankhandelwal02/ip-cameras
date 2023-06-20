@@ -41,7 +41,6 @@ const Cam = () => {
 
       {active && (
         <>
-          <h1>Stream Viewer</h1>
           <ReactPlayer
             url={"http://localhost:3001/stream.m3u8"}
             playing={true}
