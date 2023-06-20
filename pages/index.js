@@ -5,6 +5,7 @@ import { useState } from "react";
 import Cam from "../components/cam";
 // import { FiPlus } from "react-icons/Fi";
 import Sidebar from "../components/sidebar";
+import LiveStreamPage from "../components/LiveStream";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -23,7 +24,7 @@ export default function Home() {
           <div >
           {isButtonClicked && (
             <>
-            <Cam/>
+           <LiveStreamPage/>
             
             </>
           )}
