@@ -4,13 +4,19 @@ import { ImCross } from "react-icons/Im";
 import { BsCheck } from "react-icons/Bs";
 import axios from "axios";
 
-const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked}) => {
+const PopUp = ({
+  visible,
+  setVisible,
+  setCamName,
+  setCamUrl,
+  setIsButtonClicked,
+}) => {
   // console.log("visible", visible);
   const [cameraName, setCameraName] = useState("");
   const [urlPath, setUrlPath] = useState("");
   const [port, setPort] = useState("");
   const [isVisible, setIsVisible] = useState(false);
- 
+
   const sendMessage = async () => {
     setIsButtonClicked(true);
     setIsVisible(true);
@@ -19,21 +25,26 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
       setUrlPath((prevState) => [...prevState, urlPath]);
       setPort((prevState) => [...prevState, port]);
       setVisible(false);
-      setCamUrl(urlPath)
+      setCamUrl(urlPath);
 
-      try {
-        const rtspUrl = urlPath; 
-        console.log("object",rtspUrl)
-        axios.post('/api/stream', { params: rtspUrl })
-        .then(response => {
-          console.log(response.data);
+      const data = { rtspUrl: urlPath };
+
+      fetch("/api/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((responseData) => {
+          // Handle response from the backend
+          console.log("Response from backend:", responseData);
         })
-        .catch(error => {
-          console.error(error);
+        .catch((error) => {
+          // Handle error
+          console.error("Error:", error);
         });
-      } catch (error) {
-        console.error("Failed to send RTSP URL:", error);
-      }
     } else {
       alert("Please fill the required fields");
     }
@@ -97,14 +108,13 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
         </div>
         <div className="w-full h-[.4px] border border-zinc-700 "></div>
         <div>
-
-        <button
-          className=" flex justify-center sm:mx-auto mx-32 items-center w-40 mix-blend-hard-light bg-teal-500 text-base font-medium py-3 px-5 rounded-md mt-10"
-          onClick={sendMessage}>
-        
-          <BsCheck className="text-2xl" />
-          <p> Save</p>
-        </button>
+          <button
+            className=" flex justify-center sm:mx-auto mx-32 items-center w-40 mix-blend-hard-light bg-teal-500 text-base font-medium py-3 px-5 rounded-md mt-10"
+            onClick={sendMessage}
+          >
+            <BsCheck className="text-2xl" />
+            <p> Save</p>
+          </button>
         </div>
       </div>
     </div>
@@ -112,13 +122,6 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
 };
 
 export default PopUp;
-
-
-
-
-
-
-
 
 
 
@@ -155,7 +158,7 @@ export default PopUp;
 //       setVisible(false);
 
 //       try {
-//         const rtspUrl = urlPath; 
+//         const rtspUrl = urlPath;
 //         console.log("object",rtspUrl)
 //         await axios.post("/api/server", { params:  rtspUrl  });
 //         console.log("RTSP URL sent to the server");
@@ -242,23 +245,6 @@ export default PopUp;
 
 // export default PopUp;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { GoPlus } from "react-icons/Go";
 // import { ImCross } from "react-icons/Im";
@@ -279,7 +265,7 @@ export default PopUp;
 //       setVisible(false);
 
 //       try {
-//         const rtspUrl = urlPath; 
+//         const rtspUrl = urlPath;
 //         console.log("object",rtspUrl)
 //         await axios.post("/api/server", { params:  rtspUrl  });
 //         console.log("RTSP URL sent to the server");

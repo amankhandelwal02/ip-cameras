@@ -3,6 +3,7 @@ import MainHome from "../components/mainHome";
 import PopUp from "../components/popUp";
 import { useState } from "react";
 import Cam from "../components/cam";
+import Cam1 from "../components/cam1";
 import { FiPlus } from "react-icons/Fi";
 import Sidebar from "../components/sidebar";
 const inter = Inter({ subsets: ["latin"] });
@@ -22,8 +23,8 @@ export default function Home() {
           <div>
             {isButtonClicked && (
               <>
-                <Cam />
-              </>
+                <Cam1/>
+              </> 
             )}
             <div
               className="fixed bottom-1 right-[600px] box-content cursor-pointer duration-700 mx-auto my-10 flex items-center justify-center w-10 h-10 rounded-full p-2 bg-teal-500 mix-blend-hard-light"
