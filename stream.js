@@ -7,6 +7,17 @@ const rtsp = require('rtsp-server');
 const cors = require('cors'); // Import the cors package
 
 const app = express();
+app.use(express.json()); // Parse JSON request body
+
+app.get('/stream', (req, res) => {
+  const data = req.body;
+  console.log('Received data from frontend:', data);
+
+  // Process the data and send a response back to the frontend
+  const responseData = { message: 'Data received successfully' };
+  res.json(responseData);
+});
+
 app.use(cors()); // Enable CORS for all routes
 const outputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/output';
 const hlsOutputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/hls';

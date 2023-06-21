@@ -1,31 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { GoPlus } from "react-icons/Go";
 import { ImCross } from "react-icons/Im";
 import { BsCheck } from "react-icons/Bs";
 import axios from "axios";
 
-const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked}) => {
-  // console.log("visible", visible);
+const PopUp = ({ setVisible, setCamName, setCamUrl, setIsButtonClicked }) => {
   const [cameraName, setCameraName] = useState("");
   const [urlPath, setUrlPath] = useState("");
   const [port, setPort] = useState("");
   const [isVisible, setIsVisible] = useState(false);
- 
+  console.log("objectRtsp", urlPath);
+
   const sendMessage = async () => {
-    setIsButtonClicked(true);
     setIsVisible(true);
     if (cameraName.length && urlPath.length && port.length > 0) {
-      setCamName((prevState) => [...prevState, cameraName]);
-      setUrlPath((prevState) => [...prevState, urlPath]);
-      setPort((prevState) => [...prevState, port]);
-      setVisible(false);
-      setCamUrl(urlPath)
+      if (urlPath.startsWith("rtsp://")) {
+        setUrlPath((prevState) => [...prevState, urlPath]);
+        setCamName((prevState) => [...prevState, cameraName]);
 
+        setIsButtonClicked(true);
+        setVisible(false);
+      } else {
+        alert("Not a valid RTSP url");
+      }
+      setPort(port);
+
+      setCamUrl(urlPath);
       try {
-        const rtspUrl = urlPath; 
-        console.log("object",rtspUrl)
-        await axios.post("/api/server", { params:  rtspUrl  });
-        console.log("RTSP URL sent to the server");
+        const rtspUrl = urlPath;
+        console.log("rtspUrl", rtspUrl);
+        const response = await axios.post("/stream", { params: rtspUrl });
+        console.log("RTSP URL sent to the server", response.data);
       } catch (error) {
         console.error("Failed to send RTSP URL:", error);
       }
@@ -60,8 +65,11 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
             <div className="w-full box-content border border-zinc-700 px-2 py-2 rounded-lg">
               <input
                 type="text"
+                maxLength={40}
+                value={cameraName}
                 onChange={(e) => {
-                  setCameraName(e.target.value);
+                  const value = e.target.value.slice(0, 40);
+                  setCameraName(value);
                 }}
                 placeholder="Example: Home-Porch"
                 className="w-full py-2 rounded-md mix-blend-color-dodge hover:bg-indigo-950 outline-none placeholder-zinc-400 px-5"
@@ -72,7 +80,8 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
                 type="text"
                 value={urlPath}
                 onChange={(e) => {
-                  setUrlPath(e.target.value);
+                  const inputValue = e.target.value;
+                  setUrlPath(inputValue);
                 }}
                 placeholder="Example: rtsp://admin:password@123.123.123.123/stream/1"
                 className="w-full py-2 rounded-md mix-blend-color-dodge hover:bg-indigo-950 outline-none placeholder-zinc-400 px-5"
@@ -80,9 +89,12 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
             </div>
             <div className="w-full box-content border border-zinc-700 px-2 py-2 rounded-lg">
               <input
-                type="text"
+                type="number"
+                maxLength={4}
+                value={port}
                 onChange={(e) => {
-                  setPort(e.target.value);
+                  const value = e.target.value.slice(0, 4); // Only keep the first 4 characters
+                  setPort(value);
                 }}
                 placeholder="Example: 9999"
                 className="w-full py-2 rounded-md mix-blend-color-dodge hover:bg-indigo-950 outline-none placeholder-zinc-400 px-5"
@@ -92,16 +104,13 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
         </div>
         <div className="w-full h-[.4px] border border-zinc-700 "></div>
         <div>
-
-        <button
-          className=" flex justify-center sm:mx-auto mx-32 items-center w-40 mix-blend-hard-light bg-teal-500 text-base font-medium py-3 px-5 rounded-md mt-10"
-          onClick={sendMessage}>
-        
-          <BsCheck className="text-2xl" />
-          <p> Save</p>
-        </button>
-         
-
+          <button
+            className=" flex justify-center sm:mx-auto mx-32 items-center w-40 mix-blend-hard-light bg-teal-500 text-base font-medium py-3 px-5 rounded-md mt-10"
+            onClick={sendMessage}
+          >
+            <BsCheck className="text-2xl" />
+            <p> Save</p>
+          </button>
         </div>
       </div>
     </div>
@@ -109,16 +118,6 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
 };
 
 export default PopUp;
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -152,7 +151,7 @@ export default PopUp;
 //       setVisible(false);
 
 //       try {
-//         const rtspUrl = urlPath; 
+//         const rtspUrl = urlPath;
 //         console.log("object",rtspUrl)
 //         await axios.post("/api/server", { params:  rtspUrl  });
 //         console.log("RTSP URL sent to the server");
@@ -239,23 +238,6 @@ export default PopUp;
 
 // export default PopUp;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { GoPlus } from "react-icons/Go";
 // import { ImCross } from "react-icons/Im";
@@ -276,7 +258,7 @@ export default PopUp;
 //       setVisible(false);
 
 //       try {
-//         const rtspUrl = urlPath; 
+//         const rtspUrl = urlPath;
 //         console.log("object",rtspUrl)
 //         await axios.post("/api/server", { params:  rtspUrl  });
 //         console.log("RTSP URL sent to the server");
