@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-// import { GoPlus } from "react-icons/Go";
-// import { ImCross } from "react-icons/Im";
-// import { BsCheck } from "react-icons/Bs";
+import { GoPlus } from "react-icons/Go";
+import { ImCross } from "react-icons/Im";
+import { BsCheck } from "react-icons/Bs";
 import axios from "axios";
 
 const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked}) => {
@@ -41,13 +41,13 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
       >
         <div className="flex justify-between items-center ">
           <div className="flex justify-center items-center text-base font-medium space-x-4  ">
-            {/* <GoPlus /> */}
+            <GoPlus />
             <p>New Monitor</p>
           </div>
-          {/* <ImCross
+          <ImCross
             className="text-zinc-500 w-3 cursor-pointer"
             onClick={() => setVisible(false)}
-          /> */}
+          />
         </div>
         <div className="w-full h-[.4px] border border-zinc-700 "></div>
         <div className=" flex justify-start items-center text-sm font-medium sm:space-x-20 space-x-5 mx-3 pt-5 py-10">
@@ -97,7 +97,7 @@ const PopUp = ({ visible, setVisible, setCamName, setCamUrl,setIsButtonClicked})
           className=" flex justify-center sm:mx-auto mx-32 items-center w-40 mix-blend-hard-light bg-teal-500 text-base font-medium py-3 px-5 rounded-md mt-10"
           onClick={sendMessage}>
         
-          {/* <BsCheck className="text-2xl" /> */}
+          <BsCheck className="text-2xl" />
           <p> Save</p>
         </button>
          

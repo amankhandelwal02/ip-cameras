@@ -26,8 +26,8 @@ const Homee = ({setVisible}) => {
       >
        <FiPlus className="text-2xl"/>
       </div>
-      {/* <Cam /> */}
-      <LiveStream />
+     
+     
     </div>
   );
 };
