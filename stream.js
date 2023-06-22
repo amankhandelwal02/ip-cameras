@@ -4,21 +4,19 @@ const path = require('path');
 const { spawn } = require('child_process');
 const NodeWebcam = require('node-webcam');
 const rtsp = require('rtsp-server');
-const cors = require('cors'); // Import the cors package
+const cors = require('cors'); 
 
 const app = express();
-app.use(express.json()); // Parse JSON request body
+app.use(express.json()); 
 
 app.get('/stream', (req, res) => {
   const data = req.body;
   console.log('Received data from frontend:', data);
-
-  // Process the data and send a response back to the frontend
   const responseData = { message: 'Data received successfully' };
   res.json(responseData);
 });
 
-app.use(cors()); // Enable CORS for all routes
+app.use(cors()); 
 const outputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/output';
 const hlsOutputPath = '/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/hls';
 const rtspOutputUrl = 'rtsp://localhost:8554/live/stream';
@@ -35,9 +33,9 @@ const Webcam = NodeWebcam.create({
 
 let frameCount = 0;
 let framePaths = [];
-let isTranscoding = false; // Track if transcoding is in progress
+let isTranscoding = false; 
 
-// Start capturing and saving image frames
+
 function captureFrame() {
   const filePath = path.join(outputPath, `output_${frameCount}.jpg`);
 
@@ -48,7 +46,6 @@ function captureFrame() {
       frameCount++;
       console.log("Frame count:", frameCount);
 
-      // Start transcoding frames to HLS if not already in progress
       if (!isTranscoding) {
         isTranscoding = true;
         transcodeToHLS();
@@ -59,13 +56,13 @@ function captureFrame() {
   });
 }
 
-// Stream captured frames using FFmpeg and convert to HLS
+// Streaming captured frames using FFmpeg and convert to HLS
 function transcodeToHLS() {
   const inputPattern = path.join(outputPath, 'output_%d.jpg');
   const ffmpegProcess = spawn("ffmpeg", [
     "-y",
     "-start_number",
-    frameCount - 10, // Adjust the number of frames to include in the HLS stream
+    frameCount - 10, 
     "-framerate",
     "1",
     "-i",
@@ -86,23 +83,21 @@ function transcodeToHLS() {
     "append_list+omit_endlist",
     path.join(hlsOutputPath, "stream.m3u8"),
   ]);
-  
-
   ffmpegProcess.on('exit', () => {
     console.log('HLS conversion completed');
     isTranscoding = false;
   });
 }
 
-// Serve the HLS stream to handle RTSP requests
+//handling RTSP requests
 app.use(express.static(hlsOutputPath));
 
-// Start capturing image frames
+
 if (!fs.existsSync(outputPath)) {
   fs.mkdirSync(outputPath);
 }
 
-setInterval(captureFrame, 1000); // Add this line to start capturing frames
+setInterval(captureFrame, 1000); 
 
 // Start streaming frames via RTSP
 const ffmpegProcess = spawn('ffmpeg', [
@@ -124,7 +119,7 @@ const ffmpegProcess = spawn('ffmpeg', [
     console.log('RTSP streaming completed:', rtspOutputUrl);
   });
 
-// Start transcoding frames to HLS
+
 if (!fs.existsSync(hlsOutputPath)) {
   fs.mkdirSync(hlsOutputPath);
 }
@@ -132,13 +127,11 @@ if (!fs.existsSync(hlsOutputPath)) {
 // Delay the HLS conversion process to ensure frames are available
 setTimeout(transcodeToHLS, 1000);
 
-// Start the server
 const port = 3001;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// Start RTSP server
 const server = rtsp.createServer(function (req, res) {
   console.log(req.method, req.url);
 
@@ -154,7 +147,6 @@ const server = rtsp.createServer(function (req, res) {
       res.end(sdp);
       break;
     case 'SETUP':
-      // Handle SETUP request if needed
       res.end();
       break;
     case 'PLAY':
@@ -181,6 +173,8 @@ function generateSdp() {
   sdp += 'm=video 0 RTP/AVP 96\r\n';
   sdp += 'a=rtpmap:96 H264/90000\r\n';
   sdp += 'a=control:stream1\r\n';
+  sdp += 'a=range:npt=0-\r\n'; // Include this line to indicate that the stream is continuous
+  sdp += 'a=trackinfo:time=0 stream1=video stream2=audio\r\n'; // Include metadata for the tracks
   return sdp;
 }
 

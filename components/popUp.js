@@ -17,7 +17,6 @@ const PopUp = ({ setVisible, setCamName, setCamUrl, setIsButtonClicked }) => {
       if (urlPath.startsWith("rtsp://")) {
         setUrlPath((prevState) => [...prevState, urlPath]);
         setCamName((prevState) => [...prevState, cameraName]);
-
         setIsButtonClicked(true);
         setVisible(false);
       } else {

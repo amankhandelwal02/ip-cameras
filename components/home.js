@@ -1,8 +1,6 @@
 import React from "react";
 import Camera from "../assests/security_camera.png";
 import { FiPlus } from "react-icons/Fi";
-import Cam from "./cam";
-import LiveStream from "./LiveStream";
 
 const Homee = ({setVisible}) => {
   return (
@@ -26,8 +24,6 @@ const Homee = ({setVisible}) => {
       >
        <FiPlus className="text-2xl"/>
       </div>
-     
-     
     </div>
   );
 };
