@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import Hls from "hls.js";
 import Option from "./option";
