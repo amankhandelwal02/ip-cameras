@@ -17,12 +17,12 @@ app.get("/stream", (req, res) => {
 });
 
 app.use(cors());
-const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/output";
+const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/hls";
 const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
 
 const Webcam = NodeWebcam.create({
-  device: "/dev/video0",
+  device: "FaceTime HD Camera",
   width: 1280,
   height: 720,
   quality: 80,
@@ -67,7 +67,7 @@ function transcodeToHLS() {
   // LIVE
   const inputPattern = path.join(outputPath, 'output_%d.jpg');
   const frameRate = 3; 
-  const frameDuration = 2; 
+  const frameDuration = 1; 
   const numFrames = Math.floor(frameRate * frameDuration);
   const startNumber = frameCount - numFrames  >= 0 ? frameCount - numFrames * 1  : 0;
   console.log("start_number", startNumber);
@@ -87,7 +87,7 @@ function transcodeToHLS() {
     "-f",
     "hls",
     "-hls_time",
-    "2",
+    "0",
     "-hls_list_size",
     "0",
     "-hls_segment_filename",
@@ -123,7 +123,7 @@ if (!fs.existsSync(outputPath)) {
   fs.mkdirSync(outputPath);
 }
 
-setInterval(captureFrame, 1000/3);
+setInterval(captureFrame, 1000);
 
 // Start streaming frames via RTSP
 const ffmpegProcess = spawn("ffmpeg", [
@@ -150,7 +150,7 @@ if (!fs.existsSync(hlsOutputPath)) {
 }
 
 // Delay the HLS conversion process to ensure frames are available
-setTimeout(transcodeToHLS, 1000);
+setTimeout(transcodeToHLS, 100);
 
 const port = 3001;
 app.listen(port, () => {
