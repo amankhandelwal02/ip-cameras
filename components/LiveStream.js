@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+
+import { useEffect, useRef } from "react";
 import Hls from "hls.js";
+import Option from "./option";
 
 const LiveStreamPage = () => {
   const videoRef = useRef(null);
@@ -11,6 +13,8 @@ const LiveStreamPage = () => {
     if (!videoElement) return;
 
     if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+      videoElement.src = "http://localhost:3001/stream.m3u8";
+      videoElement.play();
       return;
     }
 
@@ -19,10 +23,8 @@ const LiveStreamPage = () => {
 
     const loadStream = async () => {
       try {
-        const previousPosition = videoElement.currentTime;
         await hls.loadSource("http://localhost:3001/stream.m3u8");
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoElement.currentTime = previousPosition;
           videoElement.play();
         });
       } catch (error) {
@@ -40,28 +42,22 @@ const LiveStreamPage = () => {
   }, [videoRef]);
 
   return (
-    <div className="bg-slate-900 font-light opacity-80">
-      <video
-        ref={videoRef}
-        className="video-js vjs-default-skin"
-        controls
-        autoPlay
-        muted
-      >
-        <track kind="metadata" label="time" />
-        <track kind="metadata" label="live" />
-      </video>
+    <div className="w-full h-screen px-3 bg-slate-900 space-y-3">
+      <div className="font-light opacity-80">
+        <video
+          ref={videoRef}
+          className="video-js vjs-default-skin flex-1 sm:w-screen h-full"
+          controls
+          autoPlay
+          muted
+        />
+      </div>
+      <Option videoRef={videoRef}/>
     </div>
   );
 };
 
 export default LiveStreamPage;
-
-
-
-
-
-
 
 
 

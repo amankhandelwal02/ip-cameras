@@ -44,6 +44,7 @@ export default function Home() {
           setIsButtonClicked={setIsButtonClicked}
         />
       )}
+    
     </div>
   );
 }

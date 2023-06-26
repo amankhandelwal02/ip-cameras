@@ -9,7 +9,7 @@ const Sidebar = ({ camName }) => {
         <img
           src={Background.src}
           alt="camera"
-          className="opacity-5 md:w-60 w-36 h-screen object-center"
+          className="opacity-5 md:w-60 w-32 h-screen object-center"
           layout="fill"
         />
       </div>

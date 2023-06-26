@@ -28,8 +28,8 @@ const PopUp = ({ setVisible, setCamName, setCamUrl, setIsButtonClicked }) => {
       try {
         const rtspUrl = urlPath;
         console.log("rtspUrl", rtspUrl);
-        const response = await axios.post("/stream", { params: rtspUrl });
-        console.log("RTSP URL sent to the server", response.data);
+        // const response = await axios.post("/stream", { params: rtspUrl });
+        // console.log("RTSP URL sent to the server", response.data);
       } catch (error) {
         console.error("Failed to send RTSP URL:", error);
       }
