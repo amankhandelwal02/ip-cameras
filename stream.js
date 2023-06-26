@@ -45,10 +45,13 @@ function captureFrame() {
       frameCount++;
       console.log("Frame count:", frameCount);
 
-      if (!isTranscoding) {
+      setInterval(() => {
+      if (!isTranscoding && framePaths.length > 0) {
         isTranscoding = true;
         transcodeToHLS();
       }
+    }, 1000);
+     
     } else {
       console.log("Error capturing image:", err);
     }
@@ -98,10 +101,10 @@ function captureFrame() {
 function transcodeToHLS() {
   //LIVE AND UPDATE
   const inputPattern = path.join(outputPath, 'output_%d.jpg');
-  const frameRate = 1; 
+  const frameRate = 3; 
   const frameDuration = 2; 
-  const numFrames = Math.floor(frameRate * frameDuration);
-  const startNumber = frameCount - numFrames * 2  >= 0 ? frameCount - 2 * (numFrames * 1) : 0;
+  const numFrames = Math.floor(frameRate * frameDuration) * 1 ;
+  const startNumber = frameCount - numFrames * 2 >= 0 ? frameCount - numFrames  : 0;
   console.log("start_number", startNumber);
 
 //LIVE
@@ -134,7 +137,7 @@ function transcodeToHLS() {
   const commonArgs = [
     "-y",
     "-start_number",
-    startNumber,
+    startNumber.toString(),
     "-framerate",
     frameRate.toString(),
     "-i",
@@ -163,17 +166,15 @@ function transcodeToHLS() {
   ffmpegProcess.on("exit", () => {
     console.log("HLS conversion completed");
     isTranscoding = false;
-    framePaths = []; // Clear the frame paths after conversion
+    framePaths = []; 
   });
 }
 
-setInterval(() => {
-  if (framePaths.length > 0) {
-    transcodeToHLS();
-  }
-}, 1000);
-
-// ...
+// setInterval(() => {
+//   if (framePaths.length > 0) {
+//     transcodeToHLS();
+//   }
+// }, 5000);
 
 //handling RTSP requests
 app.use(express.static(hlsOutputPath));

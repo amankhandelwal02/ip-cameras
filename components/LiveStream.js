@@ -25,6 +25,7 @@ const LiveStreamPage = () => {
       try {
         await hls.loadSource("http://localhost:3001/stream.m3u8");
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          videoRef.current.currentTime = videoRef.current.duration;
           videoElement.play();
         });
       } catch (error) {
