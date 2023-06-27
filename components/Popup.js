@@ -1,35 +1,33 @@
 import React, { useState } from "react";
-import { GoPlus } from "react-icons/Go";
-import { ImCross } from "react-icons/Im";
-import { BsCheck } from "react-icons/Bs";
+import { GoPlus } from "react-icons/go";
+import { ImCross } from "react-icons/im";
+import { BsCheck } from "react-icons/bs";
 import axios from "axios";
 
-const PopUp = ({ setVisible, setCamName, setCamUrl, setIsButtonClicked }) => {
+const PopUp = ({ setVisible, setCamName, setIsButtonClicked }) => {
   const [cameraName, setCameraName] = useState("");
   const [urlPath, setUrlPath] = useState("");
   const [port, setPort] = useState("");
-  const [isVisible, setIsVisible] = useState(false);
-  console.log("objectRtsp", urlPath);
 
   const sendMessage = async () => {
-    setIsVisible(true);
     if (cameraName.length && urlPath.length && port.length > 0) {
       if (urlPath.startsWith("rtsp://")) {
         setUrlPath((prevState) => [...prevState, urlPath]);
         setCamName((prevState) => [...prevState, cameraName]);
-        setIsButtonClicked(true);
-        setVisible(false);
+        setPort((prevState) => [...prevState, port]);
       } else {
         alert("Not a valid RTSP url");
       }
-      setPort(port);
 
-      setCamUrl(urlPath);
       try {
         const rtspUrl = urlPath;
-        console.log("rtspUrl", rtspUrl);
-        // const response = await axios.post("/stream", { params: rtspUrl });
-        // console.log("RTSP URL sent to the server", response.data);
+        await axios.post("/api/hls", { rtspUrl:  rtspUrl  });
+
+        setTimeout(() => {
+          setIsButtonClicked(true);
+          setVisible(false); 
+        }, 2000);
+
       } catch (error) {
         console.error("Failed to send RTSP URL:", error);
       }

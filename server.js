@@ -17,12 +17,12 @@ app.get("/stream", (req, res) => {
 });
 
 app.use(cors());
-const outputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/output";
-const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/camera/ip_cameras/hls";
+const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
+const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
 const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
 
 const Webcam = NodeWebcam.create({
-  device: "FaceTime HD Camera",
+  device: "/dev/video0",
   width: 1280,
   height: 720,
   quality: 80,
@@ -56,21 +56,12 @@ function captureFrame() {
 }
 
 function transcodeToHLS() {
-  // //LIVE AND UPDATE
-  // const inputPattern = path.join(outputPath, 'output_%d.jpg');
-  // const frameRate = 1;
-  // const frameDuration = 2;
-  // const numFrames = Math.floor(frameRate * frameDuration);
-  // const startNumber = frameCount - numFrames * 2 >= 0 ? frameCount - 2 * (numFrames * 1) : 0;
-  // console.log("start_number", startNumber);
-
   // LIVE
   const inputPattern = path.join(outputPath, 'output_%d.jpg');
   const frameRate = 3; 
   const frameDuration = 1; 
   const numFrames = Math.floor(frameRate * frameDuration);
   const startNumber = frameCount - numFrames  >= 0 ? frameCount - numFrames * 1  : 0;
-  // console.log("start_number", startNumber);
 
   const commonArgs = [
     "-y",

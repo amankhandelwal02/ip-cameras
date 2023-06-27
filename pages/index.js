@@ -1,9 +1,9 @@
 import { Inter } from "next/font/google";
-import MainHome from "../components/mainHome";
-import PopUp from "../components/popUp";
+import MainHome from "../components/MainHome";
+import PopUp from "../components/Popup";
 import { useState } from "react";
-import { FiPlus } from "react-icons/Fi";
-import Sidebar from "../components/sidebar";
+import { FiPlus } from "react-icons/fi";
+import Sidebar from "../components/Sidebar";
 import LiveStreamPage from "../components/LiveStream";
 const inter = Inter({ subsets: ["latin"] });
 

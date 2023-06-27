@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import Hls from "hls.js";
-import Option from "./option";
+import Option from "./Option";
 
 const LiveStreamPage = () => {
   const videoRef = useRef(null);

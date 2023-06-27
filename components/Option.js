@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
-import { AiFillCamera, AiFillTool } from "react-icons/Ai";
-import { BiPause } from "react-icons/Bi";
-import { FaCircle } from "react-icons/Fa";
-import { MdOutlineZoomOutMap } from "react-icons/Md";
-import { ImCross } from "react-icons/Im";
+import { AiFillCamera, AiFillTool } from "react-icons/ai";
+import { BiPause } from "react-icons/bi";
+import { FaCircle } from "react-icons/fa";
+import { MdOutlineZoomOutMap } from "react-icons/md";
+import { ImCross } from "react-icons/im";
+import axios from "axios";
 
 const Option = ({ videoRef }) => {
   // const videoRef = useRef(null);
 
-  const [show, setShow] = useState(false); 
+  const [show, setShow] = useState(false);
   const [text, setText] = useState("");
 
   const handlePlay = () => {
-  
+
     if (videoRef.current) {
       videoRef.current.play();
     }
@@ -50,22 +51,23 @@ const Option = ({ videoRef }) => {
       }
     }
     setShow(true);
-    setText("Full Screen")
+    setText("Full Screen");
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
     if (videoRef.current) {
+      // await axios.get("/api/stop");
       window.location.reload();
       setShow(true);
-      setText("Close")
-    }
+      setText("Close");
+      }
   }
 
   useEffect(() => {
     setTimeout(() => {
       setShow(false);
     }, 2500);
-  }, [show]); 
+  }, [show]);
 
   const Chip = ({ text }) => {
     return (
@@ -115,7 +117,7 @@ const Option = ({ videoRef }) => {
           </div>
           <div
             className="bg-red-600 hover:bg-red-700 text-white flex justify-center items-center py-1 px-1"
-           onClick={handleClose}
+            onClick={handleClose}
           >
             <ImCross className="text-sm" />
           </div>

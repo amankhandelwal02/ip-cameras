@@ -1,6 +1,6 @@
 import React from 'react'
-import Homee from './home'
-import Sidebar from './sidebar'
+import Homee from './Home'
+import Sidebar from './Sidebar'
 
 const MainHome = ({setVisible, camName}) => {
   

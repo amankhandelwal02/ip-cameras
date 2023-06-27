@@ -1,6 +1,6 @@
 import React from "react";
 import Camera from "../assests/security_camera.png";
-import { FiPlus } from "react-icons/Fi";
+import { FiPlus } from "react-icons/fi";
 
 const Homee = ({setVisible}) => {
   return (
