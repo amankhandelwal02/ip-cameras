@@ -70,7 +70,7 @@ function transcodeToHLS() {
   const frameDuration = 1; 
   const numFrames = Math.floor(frameRate * frameDuration);
   const startNumber = frameCount - numFrames  >= 0 ? frameCount - numFrames * 1  : 0;
-  console.log("start_number", startNumber);
+  // console.log("start_number", startNumber);
 
   const commonArgs = [
     "-y",
