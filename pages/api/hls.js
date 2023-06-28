@@ -8,8 +8,8 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
+const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
 // const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
 
 export default function handler(req, res) {
@@ -19,7 +19,7 @@ export default function handler(req, res) {
     console.log("RTSP_URL", RTSP_URL)
 
     const Webcam = NodeWebcam.create({
-      device: "/dev/video0",
+      device: "FaceTime HD Camera",
       width: 1280,
       height: 720,
       quality: 80,
@@ -72,6 +72,8 @@ export default function handler(req, res) {
         "libx264",
         "-pix_fmt",
         "yuv420p",
+        "-b:v",
+        "2000k",
         "-f",
         "hls",
         "-hls_time",

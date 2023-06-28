@@ -31,7 +31,7 @@ const PopUp = ({ setVisible, setCamName, setIsButtonClicked, color}) => {
         setTimeout(() => {
           setIsButtonClicked(true);
           setVisible(false);
-        }, 5000);
+        }, 7000);
        
       } catch (error) {
         console.error("Failed to send RTSP URL:", error);

@@ -1,3 +1,46 @@
+import fs from 'fs';
+
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
+const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
+let ffmpegProcess;
+export default function handler(req, res) {
+  if (req.method === 'GET') {
+    // Stop FFmpeg process
+    const stopFFmpegProcess = () => {
+      if (ffmpegProcess) {
+        ffmpegProcess.kill(); // Kill the ffmpeg process
+        console.log('FFmpeg process stopped');
+      }
+    };
+
+    // Clear directories
+    const clearDirectories = () => {
+      if (fs.existsSync(outputPath)) {
+        fs.rmSync(outputPath, { recursive: true, force: true });
+        console.log('Output directory cleared');
+      }
+
+      if (fs.existsSync(hlsOutputPath)) {
+        fs.rmSync(hlsOutputPath, { recursive: true, force: true });
+        console.log('HLS output directory cleared');
+      }
+    };
+
+    stopFFmpegProcess();
+    clearDirectories();
+
+    res.status(200).json({ message: 'Processes stopped and cleanup completed.' });
+  } else {
+    res.status(405).json({ message: 'Method Not Allowed' });
+  }
+}
+
+
+
+
+
+
+
 // const { spawn } = require("child_process");
 
 // export default function handler(req, res) {
@@ -53,43 +96,4 @@
 // }
 
 // pages/api/stop.js
-
-import fs from 'fs';
-import { spawn } from 'child_process';
-import { join } from 'path';
-
-const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
-
-export default function handler(req, res) {
-  if (req.method === 'GET') {
-    // Stop FFmpeg process
-    const stopFFmpegProcess = () => {
-      const ffmpegProcess = spawn('pkill', ['ffmpeg']);
-      ffmpegProcess.on('close', () => {
-        console.log('FFmpeg process stopped');
-      });
-    };
-
-    // Clear directories
-    const clearDirectories = () => {
-      if (fs.existsSync(outputPath)) {
-        fs.rmSync(outputPath, { recursive: true, force: true });
-        console.log('Output directory cleared');
-      }
-
-      if (fs.existsSync(hlsOutputPath)) {
-        fs.rmSync(hlsOutputPath, { recursive: true, force: true });
-        console.log('HLS output directory cleared');
-      }
-    };
-
-    stopFFmpegProcess();
-    clearDirectories();
-
-    res.status(200).json({ message: 'Processes stopped and cleanup completed.' });
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
-  }
-}
 

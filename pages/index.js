@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import Sidebar from "../components/Sidebar";
 import LiveStreamPage from "../components/LiveStream";
-import PopUpMobile from "../components/popUpMobile";
+import PopUpMobile from "../components/PopUpMobile";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +18,7 @@ export default function Home() {
 
   //POPUPMOBILE
   const [isVisible, setIsVisible] = useState(false);
-  const [isCamName, setIsCamName] = useState([]);
+  // const [camName, setCamName] = useState([]);
   const [isCamUrl, setIsCamUrl] = useState("");
   const [ButtonClicked, setButtonClicked] = useState(false);
 
@@ -59,7 +59,7 @@ export default function Home() {
           <PopUpMobile
             isVisible={isVisible}
             setIsVisible={setIsVisible}
-            setIsCamName={setIsCamName}
+            setCamName={setCamName}
             setIsCamUrl={setIsCamUrl}
             ButtonClicked={ButtonClicked}
             setButtonClicked={setButtonClicked}
