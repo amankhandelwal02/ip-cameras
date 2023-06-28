@@ -43,5 +43,5 @@ function killProcess(pid) {
   });
 }
 
-// Example: Kill process running on port 3001
-// killProcessOnPort(3000);
+// Kill process running on port 3001
+killProcessOnPort(3001);

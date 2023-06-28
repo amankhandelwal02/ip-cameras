@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import Sidebar from "../components/Sidebar";
 import LiveStreamPage from "../components/LiveStream";
+ 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
   const [camName, setCamName] = useState([]);
   const [camUrl, setCamUrl] = useState("");
   const [isButtonClicked, setIsButtonClicked] = useState(false);
+
   return (
     <div className="font-extrabold">
 
@@ -34,6 +36,7 @@ export default function Home() {
           </div>
         </div>
       )}
+    
       {visible && (
         <PopUp
           visible={visible}

@@ -4,7 +4,6 @@ import { BiPause } from "react-icons/bi";
 import { FaCircle } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
 import { ImCross } from "react-icons/im";
-import axios from "axios";
 
 const Option = ({ videoRef }) => {
   // const videoRef = useRef(null);
@@ -56,7 +55,7 @@ const Option = ({ videoRef }) => {
 
   const handleClose = async () => {
     if (videoRef.current) {
-      // await axios.get("/api/stop");
+      await axios.get("/api/stop");
       window.location.reload();
       setShow(true);
       setText("Close");
@@ -69,7 +68,7 @@ const Option = ({ videoRef }) => {
     }, 2500);
   }, [show]);
 
-  const Chip = ({ text }) => {
+  const Text = ({ text }) => {
     return (
       <>
         <span>{text}</span>
@@ -79,7 +78,7 @@ const Option = ({ videoRef }) => {
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
-      {show && <Chip text={text} />}
+      {show && <Text text={text} />}
       <div className="flex items-center justify-center">
         <div className="grid grid-cols-6 gap-0 sm:w-80 w-44">
           <div
@@ -128,6 +127,20 @@ const Option = ({ videoRef }) => {
 };
 
 export default Option;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // import React, { useRef, useState } from "react";
 // import { AiFillCamera, AiFillTool } from "react-icons/Ai";

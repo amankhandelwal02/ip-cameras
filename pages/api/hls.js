@@ -4,21 +4,22 @@ const path = require('path');
 const { spawn } = require('child_process');
 const NodeWebcam = require('node-webcam');
 const rtsp = require('rtsp-server');
-const cors = require('cors'); // Import the cors package
+const cors = require('cors'); 
 
 const app = express();
-app.use(cors()); // Enable CORS for all routes
-const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
+app.use(cors());
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
+const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
 // const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
 
 export default function handler(req, res) {
   if (req.method === "POST" && req.body && req.body.rtspUrl) {
 
     let RTSP_URL = req.body.rtspUrl;
+    console.log("RTSP_URL", RTSP_URL)
 
     const Webcam = NodeWebcam.create({
-      device: "/dev/video0",
+      device: "FaceTime HD Camera",
       width: 1280,
       height: 720,
       quality: 80,
@@ -91,7 +92,7 @@ export default function handler(req, res) {
       ffmpegProcess.on("exit", () => {
         console.log("HLS conversion completed");
         isTranscoding = false;
-        framePaths = []; // Clear the frame paths after conversion
+        framePaths = []; 
       });
     }
 
@@ -100,8 +101,6 @@ export default function handler(req, res) {
         transcodeToHLS();
       }
     }, 1000);
-
-    // ...
 
     //handling RTSP requests
     app.use(express.static(hlsOutputPath));
