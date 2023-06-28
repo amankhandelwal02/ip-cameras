@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillCamera, AiFillTool } from "react-icons/ai";
 import { BiPause } from "react-icons/bi";
 import { FaCircle } from "react-icons/fa";
@@ -63,8 +63,6 @@ const Option = ({ videoRef }) => {
       //   setShow(true);
       //   setText("Close");
       // });
-    
-      
       await axios.get("/api/stop")
       setShow(true);
       setText("Close");
@@ -92,26 +90,26 @@ const Option = ({ videoRef }) => {
       <div className="flex items-center justify-center">
         <div className="grid grid-cols-6 gap-0 sm:w-80 w-44">
           <div
-            className="bg-purple-400 hover:bg-purple-500 text-white flex justify-center items-center py-1 px-1"
+            className="bg-purple-400 hover:bg-purple-500 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
             onClick={handlePlay}
           >
             <AiFillCamera className="text-xl" />
           </div>
 
           <div
-            className="bg-orange-400 hover:bg-orange-500 text-white flex justify-center items-center py-1 px-1"
+            className="bg-orange-400 hover:bg-orange-500 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
             onClick={handlePause}
           >
             <BiPause className="text-2xl" />
           </div>
           <div
-            className="bg-red-600 hover:bg-red-700 text-white flex justify-center items-center py-1 px-1"
+            className="bg-red-600 hover:bg-red-700 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
             onClick={handleStop}
           >
             <FaCircle />
           </div>
           <div
-            className="bg-slate-400 hover:bg-slate-500 text-white flex justify-center items-center py-1 px-1"
+            className="bg-slate-400 hover:bg-slate-500 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
             onClick={() => {
               /* handle tool icon click */
             }}
@@ -119,13 +117,13 @@ const Option = ({ videoRef }) => {
             <AiFillTool className="text-xl" />
           </div>
           <div
-            className="bg-slate-400 hover:bg-slate-500 text-white flex justify-center items-center py-1 px-1"
+            className="bg-slate-400 hover:bg-slate-500 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
             onClick={handleToggleFullScreen}
           >
             <MdOutlineZoomOutMap />
           </div>
           <div
-            className="bg-red-600 hover:bg-red-700 text-white flex justify-center items-center py-1 px-1"
+            className="bg-red-600 hover:bg-red-700 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
             onClick={handleClose}
           >
             <ImCross className="text-sm" />
