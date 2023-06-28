@@ -4,6 +4,7 @@ import { BiPause } from "react-icons/bi";
 import { FaCircle } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
 import { ImCross } from "react-icons/im";
+import axios from "axios";
 
 const Option = ({ videoRef }) => {
   // const videoRef = useRef(null);
@@ -55,10 +56,18 @@ const Option = ({ videoRef }) => {
 
   const handleClose = async () => {
     if (videoRef.current) {
-      await axios.get("/api/stop");
-      window.location.reload();
-      setShow(true);
-      setText("Close");
+      await axios.get("/api/stop", (req, res) => {
+        const data = req.body;
+        console.log("Received data from frontend:", data);
+        window.location.reload();
+        setShow(true);
+        setText("Close");
+      });
+    
+      
+      // window.location.reload();
+      // setShow(true);
+      // setText("Close");
       }
   }
 

@@ -31,7 +31,7 @@ const PopUp = ({ setVisible, setCamName, setIsButtonClicked, setLoading, type, c
         setTimeout(() => {
           setIsButtonClicked(true);
           setVisible(false);
-        }, 7000);
+        }, 4000);
        
       } catch (error) {
         console.error("Failed to send RTSP URL:", error);
@@ -48,9 +48,9 @@ const PopUp = ({ setVisible, setCamName, setIsButtonClicked, setLoading, type, c
     }
   }, [isLoading, setIsLoading]);
   return (
-    <div className="flex items-center justify-center relative">
+    <div className="flex items-center justify-center relative z-10">
     {isLoading && ( 
-      <div >
+      <div className="absolute -top-[500px] left-[700px] z-50" >
       <ReactLoading type="spinningBubbles" color={color} height={50} width={50}/>
       </div>
       )}
