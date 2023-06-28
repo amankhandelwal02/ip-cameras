@@ -5,7 +5,7 @@ import { BsCheck } from "react-icons/bs";
 import ReactLoading from 'react-loading';
 import axios from "axios";
 
-const PopUp = ({ setVisible, setCamName, setIsButtonClicked, setLoading, type, color }) => {
+const PopUp = ({ setVisible, setCamName, setIsButtonClicked, color}) => {
   const [cameraName, setCameraName] = useState("");
   const [urlPath, setUrlPath] = useState("");
   const [port, setPort] = useState("");
@@ -31,7 +31,7 @@ const PopUp = ({ setVisible, setCamName, setIsButtonClicked, setLoading, type, c
         setTimeout(() => {
           setIsButtonClicked(true);
           setVisible(false);
-        }, 4000);
+        }, 5000);
        
       } catch (error) {
         console.error("Failed to send RTSP URL:", error);
@@ -48,7 +48,7 @@ const PopUp = ({ setVisible, setCamName, setIsButtonClicked, setLoading, type, c
     }
   }, [isLoading, setIsLoading]);
   return (
-    <div className="flex items-center justify-center relative z-10">
+    <div className="hidden md:flex items-center justify-center relative z-10">
     {isLoading && ( 
       <div className="absolute -top-[500px] left-[700px] z-50" >
       <ReactLoading type="spinningBubbles" color={color} height={50} width={50}/>
