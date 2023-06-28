@@ -56,18 +56,19 @@ const Option = ({ videoRef }) => {
 
   const handleClose = async () => {
     if (videoRef.current) {
-      await axios.get("/api/stop", (req, res) => {
-        const data = req.body;
-        console.log("Received data from frontend:", data);
-        window.location.reload();
-        setShow(true);
-        setText("Close");
-      });
+      // await axios.get("/api/stop", (req, res) => {
+      //   const data = req.body;
+      //   console.log("Received data from frontend:", data);
+      //   window.location.reload();
+      //   setShow(true);
+      //   setText("Close");
+      // });
     
       
-      // window.location.reload();
-      // setShow(true);
-      // setText("Close");
+      await axios.get("/api/stop")
+      setShow(true);
+      setText("Close");
+      window.location.reload();
       }
   }
 
