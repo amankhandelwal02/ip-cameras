@@ -26,6 +26,15 @@ export default function handler(req, res) {
       }
     };
 
+
+    const handleTermination = () => {
+      stopFFmpegProcess();
+      clearDirectories();
+      process.exit(0);
+    };
+
+    process.on('SIGTERM', handleTermination);
+
     stopFFmpegProcess();
     clearDirectories();
 
