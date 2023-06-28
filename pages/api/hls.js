@@ -1,3 +1,5 @@
+import { clearInterval } from 'timers';
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -8,9 +10,10 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
-const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
+const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
+const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
 // const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
+let captureInterval;
 
 export default function handler(req, res) {
   if (req.method === "POST" && req.body && req.body.rtspUrl) {
@@ -19,7 +22,7 @@ export default function handler(req, res) {
     console.log("RTSP_URL", RTSP_URL)
 
     const Webcam = NodeWebcam.create({
-      device: "FaceTime HD Camera",
+      device: "/dev/video0",
       width: 1280,
       height: 720,
       quality: 80,
@@ -48,6 +51,7 @@ export default function handler(req, res) {
           }
         } else {
           console.log("Error capturing image:", err);
+          clearInterval(captureInterval)
         }
       });
     }
@@ -111,7 +115,7 @@ export default function handler(req, res) {
       fs.mkdirSync(outputPath);
     }
 
-    setInterval(captureFrame, 1000);
+    captureInterval = setInterval(captureFrame, 1000);
 
     // Start streaming frames via RTSP
     const ffmpegProcess = spawn("ffmpeg", [
