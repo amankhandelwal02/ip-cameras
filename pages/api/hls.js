@@ -1,12 +1,10 @@
-import { clearInterval } from 'timers';
-
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const NodeWebcam = require('node-webcam');
 const rtsp = require('rtsp-server');
-const cors = require('cors'); 
+const cors = require('cors');
 
 const app = express();
 app.use(cors());
@@ -15,12 +13,12 @@ const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
 // const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
 let captureInterval;
 
+function stopCaptureInterval() {
+  clearInterval(captureInterval);
+}
+
 export default function handler(req, res) {
-  if (req.method === "POST" && req.body && req.body.rtspUrl) {
-
-    let RTSP_URL = req.body.rtspUrl;
-    console.log("RTSP_URL", RTSP_URL)
-
+  if (req.method === "POST" && !req.body.rtspUrl) {
     const Webcam = NodeWebcam.create({
       device: "/dev/video0",
       width: 1280,
@@ -51,7 +49,7 @@ export default function handler(req, res) {
           }
         } else {
           console.log("Error capturing image:", err);
-          clearInterval(captureInterval)
+          stopCaptureInterval(); // Stop the interval when an error occurs
         }
       });
     }
@@ -98,7 +96,7 @@ export default function handler(req, res) {
       ffmpegProcess.on("exit", () => {
         console.log("HLS conversion completed");
         isTranscoding = false;
-        framePaths = []; 
+        framePaths = [];
       });
     }
 
@@ -117,26 +115,6 @@ export default function handler(req, res) {
 
     captureInterval = setInterval(captureFrame, 1000);
 
-    // Start streaming frames via RTSP
-    const ffmpegProcess = spawn("ffmpeg", [
-      "-y",
-      "-framerate",
-      "3",
-      "-i",
-      path.join(outputPath, "output_%d.jpg"),
-      "-c:v",
-      "libx264",
-      "-pix_fmt",
-      "yuv420p",
-      "-f",
-      "rtsp",
-      RTSP_URL,
-    ]);
-
-    ffmpegProcess.on("exit", () => {
-      console.log("RTSP streaming completed:", RTSP_URL);
-    });
-
     if (!fs.existsSync(hlsOutputPath)) {
       fs.mkdirSync(hlsOutputPath);
     }
@@ -149,27 +127,31 @@ export default function handler(req, res) {
       console.log(`Server is running on port ${port}`);
     });
 
-    const server = rtsp.createServer(function (req, res) {
+
+    res.status(200).json({ message: 'Straem converted by WebCam', streamUrl: "http://localhost:3001/stream.m3u8" });
+  } else {
+    // res.status(500).json({ message: 'Internal Server Error' });   
+    let RTSP_URL = req.body.rtspUrl;
+
+    const server = rtsp.createServer((req, res) => {
       console.log(req.method, req.url);
 
       switch (req.method) {
-        case "OPTIONS":
-          res.setHeader("Public", "OPTIONS, DESCRIBE, SETUP, PLAY");
+        case 'OPTIONS':
+          res.setHeader('Public', 'OPTIONS, DESCRIBE, SETUP, PLAY');
           res.end();
           break;
-        case "DESCRIBE":
-          var sdp = generateSdp();
-          res.setHeader("Content-Type", "application/sdp");
-          res.setHeader("Content-Length", sdp.length);
+        case 'DESCRIBE':
+          const sdp = generateSdp();
+          res.setHeader('Content-Type', 'application/sdp');
+          res.setHeader('Content-Length', sdp.length);
           res.end(sdp);
           break;
-        case "SETUP":
+        case 'SETUP':
           res.end();
           break;
-        case "PLAY":
-          var videoStream = fs.createReadStream(
-            path.join(hlsOutputPath, "stream.m3u8")
-          );
+        case 'PLAY':
+          const videoStream = fs.createReadStream(path.join(hlsOutputPath, 'stream.m3u8'));
           videoStream.pipe(res);
           break;
         default:
@@ -178,26 +160,62 @@ export default function handler(req, res) {
       }
     });
 
-    server.listen(8554, function () {
-      var port = server.address().port;
-      console.log("RTSP server is running on port:", port);
+    server.listen(8554, () => {
+      console.log('RTSP server is running on port 8554');
+
+      // Start the HLS conversion process
+      convertToHLS(RTSP_URL);
     });
 
+    function convertToHLS(rtspUrl) {
+      // Create output directory if it doesn't exist
+      if (!fs.existsSync(hlsOutputPath)) {
+        fs.mkdirSync(hlsOutputPath);
+      }
+
+      const ffmpegArgs = [
+        '-i', rtspUrl,
+        '-c:v', 'libx264',
+        '-pix_fmt', 'yuv420p',
+        '-b:v', '2000k',
+        '-f', 'hls',
+        '-hls_time', '2',
+        '-hls_list_size', '5',
+        '-hls_segment_filename', path.join(hlsOutputPath, 'output_%d.ts'),
+        path.join(hlsOutputPath, 'stream.m3u8')
+      ];
+
+      const ffmpegProcess = spawn('ffmpeg', ffmpegArgs);
+
+      ffmpegProcess.stdout.on('data', (data) => {
+        console.log(`FFmpeg output: ${data}`);
+      });
+
+      ffmpegProcess.stderr.on('data', (data) => {
+        console.error(`FFmpeg error: ${data}`);
+      });
+
+      ffmpegProcess.on('exit', (code) => {
+        console.log(`FFmpeg process exited with code ${code}`);
+      });
+    }
+
     function generateSdp() {
-      var sdp = "v=0\r\n";
-      sdp += "o=- 0 0 IN IP4 127.0.0.1\r\n";
-      sdp += "s=RTSP Server\r\n";
-      sdp += "t=0 0\r\n";
-      sdp += "c=IN IP4 127.0.0.1\r\n";
-      sdp += "m=video 0 RTP/AVP 96\r\n";
-      sdp += "a=rtpmap:96 H264/90000\r\n";
-      sdp += "a=control:stream1\r\n";
-      sdp += "a=range:npt=0-\r\n";
-      sdp += "a=trackinfo:time=0 stream1=video stream2=audio\r\n";
+      const sdp = `v=0\r
+o=- 0 0 IN IP4 127.0.0.1\r
+s=RTSP Server\r
+t=0 0\r
+c=IN IP4 127.0.0.1\r
+m=video 0 RTP/AVP 96\r
+a=rtpmap:96 H264/90000\r
+a=control:stream1\r
+a=range:npt=0-\r
+a=trackinfo:time=0 stream1=video stream2=audio\r`;
+
       return sdp;
     }
-    res.status(200).json({ message: 'API endpoint is working!', streamUrl: "http://localhost:3001/stream.m3u8" });
-  } else {
-    res.status(500).json({ message: 'Internal Server Error' });
+
+    res.status(200).json({ message: 'Stream converted by RTSP URL', streamUrl: "http://localhost:3001/stream.m3u8" });
+
   }
 }

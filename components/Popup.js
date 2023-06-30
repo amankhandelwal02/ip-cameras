@@ -5,54 +5,61 @@ import { BsCheck } from "react-icons/bs";
 import ReactLoading from 'react-loading';
 import axios from "axios";
 
-const PopUp = ({ setVisible, setCamName, setIsButtonClicked, color}) => {
+const PopUp = ({ setVisible, setCamName, setIsButtonClicked, color }) => {
   const [cameraName, setCameraName] = useState("");
   const [urlPath, setUrlPath] = useState("");
   const [port, setPort] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
-  
+
+  function isValidRTSPUrl(url) {
+    const rtspUrlPattern = /^(rtsp:\/\/)((\w+):(\w+)@)?([\w.-]+)(:(\d+))?(\/\w+)*\/?$/;
+    return rtspUrlPattern.test(url);
+  }
+
   const sendMessage = async () => {
     if (cameraName.length && urlPath.length && port.length > 0) {
-      if (urlPath.startsWith("rtsp://")) {
-        // setUrlPath((prevState) => [...prevState, urlPath]);
+      let isValid = isValidRTSPUrl(urlPath);
+      let rtspUrl;
+      if (isValid) {
         setCamName((prevState) => [...prevState, cameraName]);
-        // setPort((prevState) => [...prevState, port]);
+        rtspUrl = urlPath;
       } else {
-        alert("Not a valid RTSP url");
+        alert("Not a valid RTSP url, continue?");
       }
 
       try {
-        const rtspUrl = urlPath;
         await axios.post("/api/hls", { rtspUrl: rtspUrl });
-        setIsLoading(true); 
+
+        setIsLoading(true);
         setShowLoader(true);
 
         setTimeout(() => {
           setIsButtonClicked(true);
           setVisible(false);
         }, 7000);
-       
+
       } catch (error) {
         console.error("Failed to send RTSP URL:", error);
       } finally {
-      setShowLoader(false); 
-    }
+        setShowLoader(false);
+      }
+
     } else {
       alert("Please fill the required fields");
     }
   };
   useEffect(() => {
     if (isLoading) {
-      setIsLoading(true); 
+      setIsLoading(true);
     }
   }, [isLoading, setIsLoading]);
   return (
     <div className="hidden md:flex items-center justify-center relative z-10">
-    {isLoading && ( 
-      <div className="absolute -top-[500px] left-[700px] z-50" >
-      <ReactLoading type="spinningBubbles" color={color} height={50} width={50}/>
-      </div>
+      {isLoading && (
+        <div className="absolute -top-[500px] left-[700px] z-50" >
+          <ReactLoading type="spinningBubbles" color={color} height={50} width={50} />
+        </div>
       )}
       <div
         className={`fixed top-3 z-10 bg-zinc-800 w-1/2 h flex-col justify-start items-center rounded-md flex-1 px-5 py-4 space-y-5`}
@@ -126,7 +133,7 @@ const PopUp = ({ setVisible, setCamName, setIsButtonClicked, color}) => {
           </button>
         </div>
       </div>
-    
+
     </div>
   );
 };
