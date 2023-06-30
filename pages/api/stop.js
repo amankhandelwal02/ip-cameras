@@ -58,8 +58,8 @@ import fs from 'fs';
 import { spawn } from 'child_process';
 import { join } from 'path';
 
-const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
+const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
 let captureInterval;
 
 export default function handler(req, res) {
