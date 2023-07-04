@@ -8,8 +8,8 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
+const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
 // const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
 let captureInterval;
 
@@ -20,7 +20,7 @@ function stopCaptureInterval() {
 export default function handler(req, res) {
   if (req.method === "POST" && !req.body.rtspUrl) {
     const Webcam = NodeWebcam.create({
-      device: "/dev/video0",
+      device: "FaceTime HD Camera",
       width: 1280,
       height: 720,
       quality: 80,
@@ -37,6 +37,12 @@ export default function handler(req, res) {
       const filePath = path.join(outputPath, `output_${frameCount}.jpg`);
 
       Webcam.capture(filePath, (err, data) => {
+
+        if (!fs.existsSync(outputPath)) {
+          console.log("no such directry");
+          stopCaptureInterval(); // Stop the interval when an error occurs
+        }
+
         if (!err) {
           console.log("Image captured:", data);
           framePaths.push(filePath);
@@ -99,6 +105,36 @@ export default function handler(req, res) {
         framePaths = [];
       });
     }
+
+    // function convertHLSToMP4() {
+    //   const mp4OutputPath = path.join(hlsOutputPath, "output.mp4");
+    
+    //   const ffmpegArgs = [
+    //     "-y",
+    //     "-i",
+    //     path.join(hlsOutputPath, "stream.m3u8"),
+    //     "-c",
+    //     "copy",
+    //     mp4OutputPath,
+    //   ];
+    
+    //   const ffmpegProcess = spawn("ffmpeg", ffmpegArgs);
+    
+    //   ffmpegProcess.stdout.on("data", (data) => {
+    //     console.log(`FFmpeg output: ${data}`);
+    //   });
+    
+    //   ffmpegProcess.stderr.on("data", (data) => {
+    //     console.error(`FFmpeg error: ${data}`);
+    //   });
+    
+    //   ffmpegProcess.on("exit", () => {
+    //     console.log("MP4 conversion completed");
+    
+    //     // Start HLS conversion again
+    //     setTimeout(transcodeToHLS, 100);
+    //   });
+    // }
 
     setInterval(() => {
       if (framePaths.length > 0) {
@@ -202,15 +238,15 @@ export default function handler(req, res) {
 
     function generateSdp() {
       const sdp = `v=0\r
-o=- 0 0 IN IP4 127.0.0.1\r
-s=RTSP Server\r
-t=0 0\r
-c=IN IP4 127.0.0.1\r
-m=video 0 RTP/AVP 96\r
-a=rtpmap:96 H264/90000\r
-a=control:stream1\r
-a=range:npt=0-\r
-a=trackinfo:time=0 stream1=video stream2=audio\r`;
+      o=- 0 0 IN IP4 127.0.0.1\r
+      s=RTSP Server\r
+      t=0 0\r
+      c=IN IP4 127.0.0.1\r
+      m=video 0 RTP/AVP 96\r
+      a=rtpmap:96 H264/90000\r
+      a=control:stream1\r
+      a=range:npt=0-\r
+      a=trackinfo:time=0 stream1=video stream2=audio\r`;
 
       return sdp;
     }
