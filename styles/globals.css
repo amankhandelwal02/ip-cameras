@@ -28,3 +28,34 @@ a {
     background: black;
   }
 }
+.timeline-container {
+  display: flex;
+  align-items: center;
+}
+
+.current-time {
+  font-size: 24px;
+  margin-right: 20px;
+}
+
+.timeline {
+  display: flex;
+  width: 100%;
+  border: 1px solid #ccc;
+}
+
+.hour-block {
+  flex-grow: 1;
+  text-align: center;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  background-color: #9e2323;
+}
+
+.hour-block.active {
+  background-color: #1680e3;
+}
+
+.hour-block:last-child {
+  border-right: none;
+}

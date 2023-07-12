@@ -56,19 +56,22 @@ const Option = ({ videoRef }) => {
 
   const handleClose = async () => {
     if (videoRef.current) {
-      // await axios.get("/api/stop", (req, res) => {
-      //   const data = req.body;
-      //   console.log("Received data from frontend:", data);
-      //   window.location.reload();
-      //   setShow(true);
-      //   setText("Close");
-      // });
       await axios.get("/api/stop")
       setShow(true);
       setText("Close");
       window.location.reload();
       }
   }
+
+  const handleBackward = () => {
+    const video = videoRef.current;
+    if (video) {
+      const newTime = video.currentTime - 10;
+      video.currentTime = newTime < 0 ? 0 : newTime;
+      setCurrentTime(video.currentTime);
+    }
+  };
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -128,6 +131,14 @@ const Option = ({ videoRef }) => {
           >
             <ImCross className="text-sm" />
           </div>
+
+          <div
+            className="bg-red-600 hover:bg-red-700 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
+            onClick={handleBackward}
+          >
+            <ImCross className="text-sm" />
+          </div>
+
         </div>
       </div>
     </div>

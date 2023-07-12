@@ -239,9 +239,9 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
-const mp4OutputPath = "/home/aman/Desktop/workspace/ip_cameras/recorded.mp4";
+const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
+const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
+const mp4OutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/recorded.mp4";
 let captureInterval;
 
 function stopCaptureInterval() {
@@ -251,7 +251,7 @@ function stopCaptureInterval() {
 export default function handler(req, res) {
   if (req.method === "POST" && !req.body.rtspUrl) {
     const Webcam = NodeWebcam.create({
-      device: "/dev/video0",
+      device: "FaceTime HD Camera",
       width: 1280,
       height: 720,
       quality: 80,
