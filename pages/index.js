@@ -6,8 +6,7 @@ import { FiPlus } from "react-icons/fi";
 import Sidebar from "../components/Sidebar";
 import LiveStreamPage from "../components/LiveStream";
 import PopUpMobile from "../components/PopUpMobile";
-import Playback_option from "../components/playback/playback_option";
-
+import VideoTimeline from "../components/VideoTimeline"
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -25,8 +24,7 @@ export default function Home() {
 
   return (
     <div className="font-extrabold">
-    <Playback_option/>
-      {!isButtonClicked ? (
+       {!isButtonClicked ? (
         <MainHome setVisible={setVisible} camName={camName} />
       ) : (
         <div className="flex">
@@ -68,6 +66,7 @@ export default function Home() {
           />
         </>
       )}
+      {/* <VideoTimeline/> */}
     </div>
   );
 }

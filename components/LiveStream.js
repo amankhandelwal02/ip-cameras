@@ -1,12 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
-import Option from "./Option";
 import Playback_option from "./playback/playback_option";
 
 const LiveStreamPage = () => {
   const videoRef = useRef(null);
   let hls;
-
   useEffect(() => {
     const videoElement = videoRef.current;
 
@@ -41,12 +39,7 @@ const LiveStreamPage = () => {
       }
     };
   }, [videoRef]);
-  const handleTimeUpdate = () => {
-    const video = videoRef.current;
-    if (video) {
-      setCurrentTime(video.currentTime);
-    }
-  };
+ 
 
   return (
     <div className="w-full h-screen px-3 bg-slate-900 space-y-3">
@@ -57,14 +50,12 @@ const LiveStreamPage = () => {
           controls
           autoPlay
           muted
-          onTimeUpdate={handleTimeUpdate}
+        
         />
-         <canvas ref={canvasRef} style={{ display: 'none' }} />
+        
       </div>
-      <Option videoRef={videoRef}/>
       <Playback_option 
       videoRef={videoRef}
-        canvasRef={canvasRef}
       />
     </div>
   );

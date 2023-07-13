@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsFillGrid3X3GapFill, BsFillVolumeDownFill } from "react-icons/bs";
 import { TiMediaPlayReverse } from "react-icons/ti";
 import Button from "@mui/material/Button";
@@ -11,57 +11,20 @@ import { BiExpand, BiZoomIn } from "react-icons/bi";
 import { IoMdFilm } from "react-icons/io";
 import { LiaCutSolid } from "react-icons/lia";
 import { HiOutlineDownload } from "react-icons/hi";
+import { AiOutlineZoomIn, AiOutlineZoomOut } from "react-icons/ai";
+import { MdOutlineFolderDelete } from "react-icons/md";
 
-const Playback_option = ({ videoRef, canvasRef }) => {
+const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [recording, setRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+
+  const [zoom, setZoom] = useState(1);
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
-  const [isReversed, setIsReversed] = useState(false);
 
-  const handleReverse = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-
-    if (video && canvas) {
-      const context = canvas.getContext('2d');
-
-      // Set canvas dimensions to match video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      // Draw video frame onto canvas
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Reverse the video frames
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const reversedImageData = reverseImageData(imageData);
-      context.putImageData(reversedImageData, 0, 0);
-
-      // Set reversed video as the source of the video element
-      video.src = canvas.toDataURL('video/webm');
-      setIsReversed(!isReversed);
-    }
-  };
-
-  const reverseImageData = (imageData) => {
-    const { data, width, height } = imageData;
-    const reversedData = new Uint8ClampedArray(data.length);
-
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const pixelIndex = (y * width + x) * 4;
-        const reversedPixelIndex = ((height - y - 1) * width + x) * 4;
-
-        // Copy pixel data from original to reversed position
-        reversedData[reversedPixelIndex] = data[pixelIndex]; // Red channel
-        reversedData[reversedPixelIndex + 1] = data[pixelIndex + 1]; // Green channel
-        reversedData[reversedPixelIndex + 2] = data[pixelIndex + 2]; // Blue channel
-        reversedData[reversedPixelIndex + 3] = data[pixelIndex + 3]; // Alpha channel
-      }
-    }
-
-    return new ImageData(reversedData, width, height);
-  };
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -69,7 +32,7 @@ const Playback_option = ({ videoRef, canvasRef }) => {
   const closeHandleClose = () => {
     setAnchorEl(null);
   };
-
+  
   const handlePlay = () => {
     if (videoRef.current) {
       videoRef.current.play();
@@ -86,6 +49,27 @@ const Playback_option = ({ videoRef, canvasRef }) => {
     setText("Pause");
   };
 
+  const handleZoomIn = () => {
+    setZoom((prevZoom) => Math.min(prevZoom + 0.1, 2)); // Increase zoom by 0.1, up to a maximum of 2
+  };
+
+  const handleZoomOut = () => {
+    setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.5)); // Decrease zoom by 0.1, down to a minimum of 0.5
+  };
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      videoElement.addEventListener("wheel", (event) => {
+        if (event.deltaY < 0) {
+          handleZoomIn();
+        } else if (event.deltaY > 0) {
+          handleZoomOut();
+        }
+      });
+    }
+  }, [videoRef]);
+
   const handleStop = () => {
     if (videoRef.current) {
       videoRef.current.pause();
@@ -94,6 +78,36 @@ const Playback_option = ({ videoRef, canvasRef }) => {
     setShow(true);
     setText("Stop");
   };
+
+  const handleDownloadVideo = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      const url = videoElement.src;
+      const filename = url.split("/").pop();
+      fetch(url)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const file = new File([blob], filename, { type: "video/mp4" });
+          saveAs(file);
+        })
+        .catch((error) => {
+          console.error("Failed to download video:", error);
+        });
+    }
+  };
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      videoElement.addEventListener("click", handleDownloadVideo);
+    }
+
+    return () => {
+      if (videoElement) {
+        videoElement.removeEventListener("click", handleDownloadVideo);
+      }
+    };
+  }, [videoRef]);
 
   const handleToggleFullScreen = () => {
     if (videoRef.current) {
@@ -119,8 +133,95 @@ const Playback_option = ({ videoRef, canvasRef }) => {
       window.location.reload();
     }
   };
-
   const handleBackward = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      videoElement.currentTime -= 5; // 300 seconds = 5 minutes
+    }
+  };
+  const handleSkipForward = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime += 10; // Add 300 seconds (5 minutes) to current time
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current.currentTime >= trimEndTime) {
+      videoRef.current.pause();
+      videoRef.current.removeEventListener("timeupdate", handleTimeUpdate);
+    }
+  };
+
+  const captureImage = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      const canvas = document.createElement("canvas");
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      const context = canvas.getContext("2d");
+      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        const imageURL = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = imageURL;
+        link.download = "video-frame.png";
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(imageURL);
+      });
+    }
+  };
+
+  const startRecording = () => {
+    const videoElement = videoRef.current;
+    if (videoElement && !recording) {
+      const stream = videoElement.captureStream();
+      const recorder = new MediaRecorder(stream);
+      setRecordedChunks([]);
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          setRecordedChunks((prevChunks) => [...prevChunks, event.data]);
+        }
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: "video/webm" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "live-clip.webm";
+        link.click();
+        URL.revokeObjectURL(url);
+      };
+
+      recorder.start();
+      setRecording(true);
+      setMediaRecorder(recorder);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && recording) {
+      mediaRecorder.stop();
+      setRecording(false);
+      setMediaRecorder(null);
+    }
+  };
+
+
+  const handleTrimButtonClick = () => {
+    setIsTrimming(true);
+  };
+
+
+
+  const hhandleBackward = () => {
     const video = videoRef.current;
     if (video) {
       const newTime = video.currentTime - 10;
@@ -168,50 +269,63 @@ const Playback_option = ({ videoRef, canvasRef }) => {
           <MenuItem onClick={handleClose}>3*3</MenuItem>
           <MenuItem onClick={handleClose}>4*4</MenuItem>
         </Menu>
+        <MdOutlineFolderDelete/>
       </div>
 
       <div className="flex space-x-7 text-black">
-        <div onClick={handleReverse}>
+        <div>
           <TiMediaPlayReverse />
         </div>
-        <div>
+        <div onClick={handlePause}>
           <GrStopFill />
         </div>
-        <div>
+        <div onClick={handleBackward}>
           <AiFillBackward />
         </div>
-        <div>
+        <div onClick={handlePlay}>
           <FaPlay />
         </div>
-        <div>
+        <div onClick={handleSkipForward}>
           <AiFillForward />
         </div>
       </div>
 
-      <div className="flex items-center space-x-7 text-black">
+      <div className="flex items-center space-x-7 text-black cursor-pointer duration-300">
         <div>
-          <IoMdFilm />
+          {!recording && (
+            <div onClick={startRecording}>
+              <IoMdFilm />
+            </div>
+          )}
+          {recording && (
+            <div onClick={stopRecording}>
+              <IoMdFilm />
+            </div>
+          )}
         </div>
-        <div>
+
+        <div onClick={captureImage}>
           <AiFillCamera />
         </div>
         <div>
-          {" "}
-          <LiaCutSolid />
+        {isTrimming ?  <LiaCutSolid /> :  <LiaCutSolid />}
+         
         </div>
-        <div>
-          {" "}
-          <BiZoomIn />
+        <div onClick={handleZoomIn}>
+          <AiOutlineZoomIn />
+        </div>
+        <div onClick={handleZoomOut}>
+          <AiOutlineZoomOut />
         </div>
         <div>
           {" "}
           <BsFillVolumeDownFill className="text-black" />
         </div>
-        <div>
+        <div onClick={handleDownloadVideo}>
           {" "}
           <HiOutlineDownload />
         </div>
-        <div>
+        <div onClick={handleToggleFullScreen}>
           {" "}
           <BiExpand />
         </div>
