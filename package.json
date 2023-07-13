@@ -9,9 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffmpeg/core": "^0.11.0",
     "@ffmpeg/ffmpeg": "^0.11.6",
+    "@mui/icons-material": "^5.14.0",
+    "@mui/material": "^5.14.0",
+    "@mui/styled-engine-sc": "^5.12.0",
     "axios": "^1.4.0",
     "child_process": "^1.0.2",
     "cookie-parser": "^1.4.6",
@@ -64,6 +69,7 @@
     "socket.io": "^4.6.2",
     "socket.io-client": "^4.6.1",
     "stream": "^0.0.2",
+    "styled-components": "^5.3.11",
     "util": "^0.12.5",
     "video-react": "^0.16.0",
     "video.js": "^8.3.0",
