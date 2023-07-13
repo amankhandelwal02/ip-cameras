@@ -28,34 +28,47 @@ a {
     background: black;
   }
 }
-.timeline-container {
+
+.video-container {
+  position: relative;
+  width: 100%;
+}
+
+.video-player {
+  margin-bottom: 1rem;
+}
+
+.controls {
   display: flex;
   align-items: center;
 }
 
-.current-time {
-  font-size: 24px;
-  margin-right: 20px;
+.play-pause-btn {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
 }
 
 .timeline {
   display: flex;
-  width: 100%;
-  border: 1px solid #ccc;
+  align-items: center;
+  overflow-x: auto;
+  height: 100px;
+  margin-top: 1rem;
 }
 
-.hour-block {
-  flex-grow: 1;
-  text-align: center;
-  border-right: 1px solid #ccc;
-  padding: 10px;
-  background-color: #9e2323;
+.thumbnail {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
 }
 
-.hour-block.active {
-  background-color: #1680e3;
-}
-
-.hour-block:last-child {
-  border-right: none;
+.thumbnail.active {
+  border-color: #ff0000;
 }
