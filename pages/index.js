@@ -5,7 +5,9 @@ import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import Sidebar from "../components/Sidebar";
 import LiveStreamPage from "../components/LiveStream";
-import PopUpMobile from "../components/PopUpMobile";
+import PopUpMobile from "../components/popUpMobile";
+import VideoTimeline from "../components/VideoTimeline";
+// import PopUpMobile from "../components/PopUpMobile";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -66,6 +68,7 @@ export default function Home() {
           />
         </>
       )}
+      <VideoTimeline />
     </div>
   );
 }

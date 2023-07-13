@@ -28,3 +28,47 @@ a {
     background: black;
   }
 }
+
+.video-container {
+  position: relative;
+  width: 100%;
+}
+
+.video-player {
+  margin-bottom: 1rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+}
+
+.play-pause-btn {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  height: 100px;
+  margin-top: 1rem;
+}
+
+.thumbnail {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.thumbnail.active {
+  border-color: #ff0000;
+}
