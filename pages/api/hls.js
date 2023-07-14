@@ -237,7 +237,7 @@ const app = express();
 app.use(cors());
 const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
 const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
-// const recordingPath = "/home/aman/Desktop/workspace/ip_cameras/recording";
+const recordingPath = "/home/aman/Desktop/workspace/ip_cameras/public/recordings";
 let captureInterval;
 let isRecording = false;
 
@@ -333,7 +333,11 @@ export default function handler(req, res) {
     }
 
     function startRecording() {
-      const outputVideoPath = path.join(outputPath, 'output.mp4');
+      const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const outputVideoFilename = `output_${currentDate}.mp4`;
+      const outputVideoPath = path.join(recordingPath, outputVideoFilename);
+
+      // const outputVideoPath = path.join(recordingPath, 'output.mp4');
       const inputImagePattern = path.join(outputPath, 'output_%d.jpg');
     
       ffmpeg()
@@ -370,6 +374,10 @@ export default function handler(req, res) {
 
     if (!fs.existsSync(outputPath)) {
       fs.mkdirSync(outputPath);
+    }
+
+    if (!fs.existsSync(recordingPath)) {
+      fs.mkdirSync(recordingPath);
     }
 
     captureInterval = setInterval(captureFrame, 1000);

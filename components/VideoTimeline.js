@@ -223,11 +223,11 @@ const VideoTimeline = ({ videoSrc }) => {
     };
   }, []);
 
-  console.log("frames", frames)
+  console.log("frames", frames);
 
   return (
     <div className="video-container w-3/4 mx-auto">
-      <video ref={videoRef} src={"/output_2023-07-14T14-23-22.mp4"} controls />
+      <video ref={videoRef} src={"/recordings/output.mp4"} controls />
       <div className="timeline-bar" ref={timelineRef}>
         {frames.length > 0 && frames.map((frame, index) => (
           <div
