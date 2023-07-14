@@ -66,7 +66,7 @@ export default function Home() {
           />
         </>
       )}
-      <VideoTimeline />
+      {/* <VideoTimeline /> */}
     </div>
   );
 }
