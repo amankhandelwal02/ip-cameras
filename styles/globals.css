@@ -31,44 +31,45 @@ a {
 
 .video-container {
   position: relative;
+}
+
+.timeline-bar {
   width: 100%;
-}
-
-.video-player {
-  margin-bottom: 1rem;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-}
-
-.play-pause-btn {
-  font-size: 1.5rem;
-  margin-right: 1rem;
-  padding: 0.5rem;
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-}
-
-.timeline {
-  display: flex;
-  align-items: center;
+  height: 120px; /* Adjust the height as needed */
+  background-color: #f0f0f0;
+  position: relative;
   overflow-x: auto;
-  height: 100px;
-  margin-top: 1rem;
+  white-space: nowrap;
 }
 
-.thumbnail {
-  width: 100px;
-  height: 80px;
-  object-fit: cover;
+.timeline-frame {
+  display: inline-block;
+  width: 100px; /* Adjust the width as needed */
+  /* height: 100%; */
+  background-size: cover;
   cursor: pointer;
-  border: 2px solid transparent;
+  margin-right: 2px;
 }
 
-.thumbnail.active {
-  border-color: #ff0000;
+.timeline-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background-color: red;
+  z-index: 1;
+  pointer-events: none;
 }
+
+.scrubber {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px; /* Adjust the width as needed */
+  height: 100%;
+  background-color: #000;
+  z-index: 2;
+  cursor: ew-resize;
+}
+

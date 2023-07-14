@@ -1,3 +1,5 @@
+
+
 // const express = require('express');
 // const fs = require('fs');
 // const path = require('path');
@@ -9,8 +11,7 @@
 // const app = express();
 // app.use(cors());
 // const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
-// const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
-// // const rtspOutputUrl = "rtsp://localhost:8554/live/stream";
+// const hlsOutputPath = "/home/aman/Desktop/workspace/ip_camerashls";
 // let captureInterval;
 
 // function stopCaptureInterval() {
@@ -37,9 +38,8 @@
 //       const filePath = path.join(outputPath, `output_${frameCount}.jpg`);
 
 //       Webcam.capture(filePath, (err, data) => {
-
 //         if (!fs.existsSync(outputPath)) {
-//           console.log("no such directry");
+//           console.log("no such directory");
 //           stopCaptureInterval(); // Stop the interval when an error occurs
 //         }
 
@@ -61,7 +61,6 @@
 //     }
 
 //     function transcodeToHLS() {
-//       // LIVE
 //       const inputPattern = path.join(outputPath, 'output_%d.jpg');
 //       const frameRate = 3;
 //       const frameDuration = 1;
@@ -106,16 +105,12 @@
 //       });
 //     }
 
-    
-    
-
 //     setInterval(() => {
 //       if (framePaths.length > 0) {
 //         transcodeToHLS();
 //       }
 //     }, 1000);
 
-//     //handling RTSP requests
 //     app.use(express.static(hlsOutputPath));
 
 //     if (!fs.existsSync(outputPath)) {
@@ -128,18 +123,16 @@
 //       fs.mkdirSync(hlsOutputPath);
 //     }
 
-//     // Delay the HLS conversion process to ensure frames are available
-//     setTimeout(transcodeToHLS, 100);
-
 //     const port = 3001;
 //     app.listen(port, () => {
 //       console.log(`Server is running on port ${port}`);
 //     });
 
-
-//     res.status(200).json({ message: 'Straem converted by WebCam', streamUrl: "http://localhost:3001/stream.m3u8", mp4StreamUrl: "http://localhost:3001/output.mp4" });
+//     res.status(200).json({
+//       message: 'Stream converted by Webcam',
+//       streamUrl: "http://localhost:3001/stream.m3u8",
+//     });
 //   } else {
-//     // res.status(500).json({ message: 'Internal Server Error' });   
 //     let RTSP_URL = req.body.rtspUrl;
 
 //     const server = rtsp.createServer((req, res) => {
@@ -171,13 +164,10 @@
 
 //     server.listen(8554, () => {
 //       console.log('RTSP server is running on port 8554');
-
-//       // Start the HLS conversion process
 //       convertToHLS(RTSP_URL);
 //     });
 
 //     function convertToHLS(rtspUrl) {
-//       // Create output directory if it doesn't exist
 //       if (!fs.existsSync(hlsOutputPath)) {
 //         fs.mkdirSync(hlsOutputPath);
 //       }
@@ -224,10 +214,14 @@
 //       return sdp;
 //     }
 
-//     res.status(200).json({ message: 'Stream converted by RTSP URL', streamUrl: "http://localhost:3001/stream.m3u8" });
-
+//     res.status(200).json({
+//       message: 'Stream converted by RTSP URL',
+//       streamUrl: "http://localhost:3001/stream.m3u8",
+//     });
 //   }
 // }
+
+
 
 const express = require('express');
 const fs = require('fs');
@@ -236,13 +230,16 @@ const { spawn } = require('child_process');
 const NodeWebcam = require('node-webcam');
 const rtsp = require('rtsp-server');
 const cors = require('cors');
+const ffmpeg = require('fluent-ffmpeg');
+
 
 const app = express();
 app.use(cors());
-const outputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output";
-const hlsOutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/hls";
-const mp4OutputPath = "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/recorded.mp4";
+const outputPath = "/home/aman/Desktop/workspace/ip_cameras/output";
+const hlsOutputPath = "/home/aman/Desktop/workspace/ip_cameras/hls";
+// const recordingPath = "/home/aman/Desktop/workspace/ip_cameras/recording";
 let captureInterval;
+let isRecording = false;
 
 function stopCaptureInterval() {
   clearInterval(captureInterval);
@@ -251,7 +248,7 @@ function stopCaptureInterval() {
 export default function handler(req, res) {
   if (req.method === "POST" && !req.body.rtspUrl) {
     const Webcam = NodeWebcam.create({
-      device: "FaceTime HD Camera",
+      device: "/dev/video0",
       width: 1280,
       height: 720,
       quality: 80,
@@ -335,48 +332,37 @@ export default function handler(req, res) {
       });
     }
 
-    function convertToMP4() {
-      const inputPattern = path.join(outputPath, 'output_%d.jpg');
-
-      const ffmpegArgs = [
-        "-y",
-        "-framerate",
-        "3",
-        "-i",
-        inputPattern,
-        "-c:v",
-        "libx264",
-        "-pix_fmt",
-        "yuv420p",
-        "-r",
-        "30",
-        "-vf",
-        "pad=ceil(iw/2)*2:ceil(ih/2)*2",
-        "-crf",
-        "18",
-        "-movflags",
-        "+faststart",
-        mp4OutputPath,
-      ];
-
-      const ffmpegProcess = spawn("ffmpeg", ffmpegArgs);
-
-      ffmpegProcess.stdout.on("data", (data) => {
-        console.log(`FFmpeg output: ${data}`);
-      });
-
-      ffmpegProcess.stderr.on("data", (data) => {
-        console.error(`FFmpeg error: ${data}`);
-      });
-
-      ffmpegProcess.on("exit", (code) => {
-        console.log(`FFmpeg process exited with code ${code}`);
-      });
+    function startRecording() {
+      const outputVideoPath = path.join(outputPath, 'output.mp4');
+      const inputImagePattern = path.join(outputPath, 'output_%d.jpg');
+    
+      ffmpeg()
+        .input(inputImagePattern)
+        .inputFPS(5)
+        .output(outputVideoPath)
+        .outputOptions(['-c:v libx264', '-pix_fmt yuv420p'])
+        .on('start', () => {
+          isRecording = true;
+          console.log('Recording started');
+        })
+        .on('end', () => {
+          isRecording = false;
+          console.log('Recording ended');
+        })
+        .on('error', (err) => {
+          isRecording = false;
+          console.error('Error during recording:', err.message);
+        })
+        .run();
     }
 
     setInterval(() => {
       if (framePaths.length > 0) {
         transcodeToHLS();
+      }
+
+      if (!isRecording) {
+        startRecording();
       }
     }, 1000);
 
@@ -392,10 +378,6 @@ export default function handler(req, res) {
       fs.mkdirSync(hlsOutputPath);
     }
 
-    setTimeout(() => {
-      convertToMP4();
-    }, 10000);
-
     const port = 3001;
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
@@ -404,7 +386,6 @@ export default function handler(req, res) {
     res.status(200).json({
       message: 'Stream converted by Webcam',
       streamUrl: "http://localhost:3001/stream.m3u8",
-      mp4StreamUrl: "http://localhost:3001/output.mp4",
     });
   } else {
     let RTSP_URL = req.body.rtspUrl;
@@ -494,3 +475,4 @@ export default function handler(req, res) {
     });
   }
 }
+

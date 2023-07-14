@@ -132,12 +132,12 @@ const Option = ({ videoRef }) => {
             <ImCross className="text-sm" />
           </div>
 
-          <div
+          {/* <div
             className="bg-red-600 hover:bg-red-700 text-white flex justify-center items-center py-1 px-1 cursor-pointer duration-300"
             onClick={handleBackward}
           >
             <ImCross className="text-sm" />
-          </div>
+          </div> */}
 
         </div>
       </div>

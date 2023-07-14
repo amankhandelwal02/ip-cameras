@@ -1,331 +1,255 @@
-// // import React, { useRef, useState, useEffect } from 'react';
+// import React, { useRef, useEffect, useState } from 'react';
 
-// // const VideoTimeline = () => {
-// //   const videoRef = useRef(null)
-// //   const canvasRef = useRef(null);
-// //   const [isPlaying, setIsPlaying] = useState(false);
-// //   const [currentTime, setCurrentTime] = useState(0);
-// //   const [thumbnails, setThumbnails] = useState([]);
-
-// //   useEffect(() => {
-// //     const videoElement = videoRef.current;
-
-// //     const generateThumbnails = () => {
-// //       const canvasElement = canvasRef.current;
-// //       const context = canvasElement.getContext('2d');
-// //       const videoDuration = videoElement.duration;
-// //       const thumbnailCount = Math.ceil(videoDuration);
-// //       const thumbnailImages = [];
-
-// //       canvasElement.width = thumbnailCount * 100; 
-
-// //       for (let i = 0; i < thumbnailCount; i++) {
-// //         const time = i;
-// //         videoElement.currentTime = time;
-// //         context.drawImage(videoElement, i * 100, 0, 100, canvasElement.height); 
-// //         const thumbnailURL = canvasElement.toDataURL();
-// //         thumbnailImages.push(thumbnailURL);
-// //       }
-
-// //       setThumbnails(thumbnailImages)
-// //     };
-
-// //     generateThumbnails();
-// //   }, []);
-
-// //   const handlePlayPause = () => {
-// //     setIsPlaying(!isPlaying);
-// //     const videoElement = videoRef.current;
-// //     if (isPlaying) {
-// //       videoElement.pause();
-// //     } else {
-// //       videoElement.play();
-// //     }
-// //   };
-
-// //   const handleTimeUpdate = () => {
-// //     const videoElement = videoRef.current;
-// //     setCurrentTime(videoElement.currentTime);
-// //   };
-
-// //   const handleSeek = (time) => {
-// //     const videoElement = videoRef.current;
-// //     videoElement.currentTime = time
-// //   };
-
-// //   return (
-// //     <div className="video-container">
-// //       <div className="video-player">
-// //         <video
-// //           ref={videoRef}
-// //           src="/earth.mp4"
-// //           onTimeUpdate={handleTimeUpdate}
-// //           controls
-// //         />
-// //       </div>
-// //       <div className="controls">
-       
-// //         <div className="timeline-container">
-// //           <div className="timeline">
-// //             {thumbnails.map((thumbnailURL, index) => (
-// //               <img
-// //                 key={index}
-// //                 src={thumbnailURL}
-// //                 alt={`Thumbnail ${index}`}
-// //                 className={`thumbnail ${
-// //                   currentTime >= index && currentTime < index + 1 ? 'active' : ''
-// //                 }`}
-// //                 onClick={() => handleSeek(index)}
-// //               />
-// //             ))}
-// //           </div>
-// //         </div>
-// //       </div>
-// //       <canvas ref={canvasRef} style={{ display: 'none' }} />
-// //     </div>
-// //   );
-// // };
-
-// // export default VideoTimeline
-
-
-
-
-// import React, { useRef, useState, useEffect } from 'react';
-
-// const VideoTimeline = () => {
+// const VideoTimeline = ({ videoSrc }) => {
 //   const videoRef = useRef(null);
-//   const canvasRef = useRef(null);
-//   const [isPlaying, setIsPlaying] = useState(false);
-//   const [currentTime, setCurrentTime] = useState(0);
-//   const [thumbnails, setThumbnails] = useState([]);
-//   const [scrubberPosition, setScrubberPosition] = useState(0);
+//   const timelineRef = useRef(null);
+//   const [frames, setFrames] = useState([]);
+//   const frameWidth = 100; // Adjust this value as needed
 
 //   useEffect(() => {
-//     const videoElement = videoRef.current;
+//     const video = videoRef.current;
+//     const timeline = timelineRef.current;
+//     const canvas = document.createElement('canvas');
+//     const context = canvas.getContext('2d');
+//     const frameCount = Math.floor(video.duration);
+//     const extractedFrames = [];
 
-//     const generateThumbnails = () => {
-//       const canvasElement = canvasRef.current;
-//       const context = canvasElement.getContext('2d');
-//       const videoDuration = videoElement.duration;
-//       const thumbnailCount = Math.ceil(videoDuration);
-//       const thumbnailImages = [];
+//     canvas.width = frameWidth;
+//     canvas.height = timeline.offsetHeight;
 
-//       canvasElement.width = thumbnailCount * 100; 
-
-//       for (let i = 0; i < thumbnailCount; i++) {
-//         const time = i;
-//         videoElement.currentTime = time;
-//         context.drawImage(videoElement, i * 100, 0, 100, canvasElement.height); 
-//         const thumbnailURL = canvasElement.toDataURL();
-//         thumbnailImages.push(thumbnailURL);
-//       }
-
-//       setThumbnails(thumbnailImages)
+//     const extractFrame = (time) => {
+//       context.drawImage(video, 0, 0, frameWidth, canvas.height);
+//       const imageData = context.getImageData(0, 0, frameWidth, canvas.height);
+//       extractedFrames.push(imageData);
 //     };
 
-//     generateThumbnails();
+//     const renderFrames = () => {
+//       const timelineProgress = timeline.querySelector('.timeline-progress');
+//       extractedFrames.forEach((frameData, index) => {
+//         const frameElement = document.createElement('div');
+//         frameElement.className = 'timeline-frame';
+//         frameElement.style.backgroundImage = `url(${getImageDataUrl(frameData)})`;
+//         frameElement.style.width = `${frameWidth}px`;
+//         timeline.appendChild(frameElement);
+
+//         frameElement.addEventListener('click', () => {
+//           const percentage = index / frameCount;
+//           const currentTime = video.duration * percentage;
+//           video.currentTime = currentTime;
+//         });
+//       });
+
+//       const progressWidth = (video.currentTime / video.duration) * 100;
+//       timelineProgress.style.width = `${progressWidth}%`;
+//     };
+
+//     const getImageDataUrl = (imageData) => {
+//       const tempCanvas = document.createElement('canvas');
+//       tempCanvas.width = imageData.width;
+//       tempCanvas.height = imageData.height;
+//       const tempContext = tempCanvas.getContext('2d');
+//       tempContext.putImageData(imageData, 0, 0);
+//       return tempCanvas.toDataURL();
+//     };
+
+//     video.addEventListener('loadedmetadata', () => {
+//       for (let i = 0; i < frameCount; i++) {
+//         extractFrame(i);
+//       }
+//       renderFrames();
+//     });
+
+//     video.addEventListener('timeupdate', () => {
+//       const progressWidth = (video.currentTime / video.duration) * 100;
+//       timeline.querySelector('.timeline-progress').style.width = `${progressWidth}%`;
+//     });
+
+//     return () => {
+//       video.removeEventListener('loadedmetadata', () => {});
+//       video.removeEventListener('timeupdate', () => {});
+//     };
 //   }, []);
-
-//   const handlePlayPause = () => {
-//     setIsPlaying(!isPlaying);
-//     const videoElement = videoRef.current;
-//     if (isPlaying) {
-//       videoElement.pause();
-//     } else {
-//       videoElement.play();
-//     }
-//   };
-
-//   const handleTimeUpdate = () => {
-//     const videoElement = videoRef.current;
-//     setCurrentTime(videoElement.currentTime);
-//     setScrubberPosition((videoElement.currentTime / videoElement.duration) * 100);
-//   };
-
-//   const handleScrubberDrag = (e) => {
-//     const scrubberElement = e.target;
-//     const scrubberWidth = scrubberElement.offsetWidth;
-//     const scrubberX = e.pageX - scrubberElement.getBoundingClientRect().left;
-//     const positionPercentage = (scrubberX / scrubberWidth) * 100;
-//     const newPosition = (positionPercentage * videoRef.current.duration) / 100;
-
-//     videoRef.current.currentTime = newPosition;
-//     setScrubberPosition(positionPercentage);
-//   };
 
 //   return (
 //     <div className="video-container">
-//       <div className="video-player">
-//         <video
-//           ref={videoRef}
-//           src="/earth.mp4"
-//           onTimeUpdate={handleTimeUpdate}
-//           controls
-//         />
+//       <video ref={videoRef} src={"/earth.mp4"} controls />
+//       <div className="timeline-bar" ref={timelineRef}>
+//         <div className="timeline-progress" />
 //       </div>
-//       <div className="controls">
-//         <div
-//           className="scrubber"
-//           style={{ position: 'relative', width: '100%', height: '10px' }}
-//           onMouseDown={handleScrubberDrag}
-//         >
-//           <div
-//             className="scrubber-bar"
-//             style={{
-//               position: 'absolute',
-//               top: '0',
-//               left: '0',
-//               width: `${scrubberPosition}%`,
-//               height: '100%',
-//               backgroundColor: 'red',
-//             }}
-//           />
-//         </div>
-//         <div className="timeline-container">
-//           <div className="timeline">
-//             {thumbnails.map((thumbnailURL, index) => (
-//               <img
-//                 key={index}
-//                 src={thumbnailURL}
-//                 alt={`Thumbnail ${index}`}
-//                 className={`thumbnail ${
-//                   currentTime >= index && currentTime < index + 1 ? 'active' : ''
-//                 }`}
-//                 onClick={() => handleSeek(index)}
-//               />
-//             ))}
-//           </div>
-//         </div>
-//       </div>
-//       <canvas ref={canvasRef} style={{ display: 'none' }} />
 //     </div>
 //   );
 // };
 
 // export default VideoTimeline;
 
+// import React, { useRef, useEffect, useState } from 'react';
 
+// const VideoTimeline = ({ videoSrc }) => {
+//   const videoRef = useRef(null);
+//   const timelineRef = useRef(null);
+//   const [frames, setFrames] = useState([]);
+//   const frameWidth = 100; // Adjust this value as needed
 
+//   useEffect(() => {
+//     const video = videoRef.current;
+//     const timeline = timelineRef.current;
+//     const frameCount = Math.floor(video.duration);
+//     const extractedFrames = []
 
-import React, { useRef, useState, useEffect } from 'react';
+//     const generateFrames = async () => {
+//       for (let i = 0; i < frameCount; i++) {
+//         video.currentTime = i;
+//         await video.play().catch((err) => {
+//           console.error('Video playback error:', err);
+//         });
+//         const canvas = document.createElement('canvas');
+//         canvas.width = frameWidth;
+//         canvas.height = timeline.offsetHeight;
+//         const context = canvas.getContext('2d');
+//         context.drawImage(video, 0, 0, frameWidth, canvas.height);
+//         const frameData = canvas.toDataURL('image/jpeg');
+//         extractedFrames.push(frameData);
+//         video.pause();
+//       }
+//       setFrames(extractedFrames);
+//     };
 
-const VideoTimeline = () => {
+//     generateFrames();
+//   }, []);
+
+//   return (
+//     <div className="video-container">
+//       <video ref={videoRef} src={"/earth.mp4"} controls />
+//       <div className="timeline-bar" ref={timelineRef}>
+//         {frames.map((frame, index) => (
+//           <div
+//             key={index}
+//             className="timeline-frame"
+//             style={{
+//               backgroundImage: `url(${frame})`,
+//               width: `${frameWidth}px`,
+//               height: '100%',
+//               display: 'inline-block',
+//             }}
+//             onClick={() => {
+//               const video = videoRef.current;
+//               const percentage = index / frames.length;
+//               const currentTime = video.duration * percentage;
+//               video.currentTime = currentTime;
+//             }}
+//           />
+//         ))}
+//         <div className="timeline-progress" />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default VideoTimeline;
+
+import React, { useRef, useEffect, useState } from 'react';
+
+const VideoTimeline = ({ videoSrc }) => {
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [thumbnails, setThumbnails] = useState([]);
-  const [scrubberPosition, setScrubberPosition] = useState(0);
+  const timelineRef = useRef(null);
+  const scrubberRef = useRef(null);
+  const [frames, setFrames] = useState([]);
+  const frameWidth = 53; // Adjust this value as needed
 
   useEffect(() => {
-    const videoElement = videoRef.current;
+    const video = videoRef.current;
+    const timeline = timelineRef.current;
+    const scrubber = scrubberRef.current;
+    const frameCount = Math.floor(video.duration);
+    const extractedFrames = [];
 
-    const generateThumbnails = () => {
-      const canvasElement = canvasRef.current;
-      const context = canvasElement.getContext('2d');
-      const videoDuration = videoElement.duration;
-      const thumbnailCount = Math.ceil(videoDuration);
-      const thumbnailImages = [];
-
-      canvasElement.width = thumbnailCount * 100; 
-
-      for (let i = 0; i < thumbnailCount; i++) {
-        const time = i;
-        videoElement.currentTime = time;
-        context.drawImage(videoElement, i * 100, 0, 100, canvasElement.height); 
-        const thumbnailURL = canvasElement.toDataURL();
-        thumbnailImages.push(thumbnailURL);
+    const generateFrames = async () => {
+      for (let i = 0; i < frameCount; i++) {
+        video.currentTime = i;
+        await video.play().catch((err) => {
+          console.error('Video playback error:', err);
+        });
+        const canvas = document.createElement('canvas');
+        canvas.width = frameWidth;
+        canvas.height = timeline.offsetHeight;
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, frameWidth, canvas.height);
+        const frameData = canvas.toDataURL('image/jpeg');
+        extractedFrames.push(frameData);
+        video.pause();
       }
-
-      setThumbnails(thumbnailImages)
+      setFrames(extractedFrames);
     };
 
-    generateThumbnails();
+    const handleScrubberDrag = (event) => {
+      const timelineRect = timeline.getBoundingClientRect();
+      const offsetX = event.clientX - timelineRect.left;
+      const percentage = offsetX / timeline.offsetWidth;
+      const currentTime = video.duration * percentage;
+      video.currentTime = currentTime;
+    };
+
+    generateFrames();
+
+    scrubber.addEventListener('mousedown', () => {
+      document.addEventListener('mousemove', handleScrubberDrag);
+    });
+
+    document.addEventListener('mouseup', () => {
+      document.removeEventListener('mousemove', handleScrubberDrag);
+    });
+
+    return () => {
+      video.removeEventListener('loadedmetadata', () => {});
+      video.removeEventListener('timeupdate', () => {});
+      document.removeEventListener('mousemove', handleScrubberDrag);
+      document.removeEventListener('mouseup', handleScrubberDrag);
+    };
   }, []);
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    const videoElement = videoRef.current;
-    if (isPlaying) {
-      videoElement.pause();
-    } else {
-      videoElement.play();
-    }
-  };
+  useEffect(() => {
+    const video = videoRef.current;
+    const scrubber = scrubberRef.current;
 
-  const handleTimeUpdate = () => {
-    const videoElement = videoRef.current;
-    setCurrentTime(videoElement.currentTime);
-    setScrubberPosition((videoElement.currentTime / videoElement.duration) * 100);
-  };
+    const handleVideoTimeUpdate = () => {
+      const scrubberWidth = (video.currentTime / video.duration) * 100;
+      scrubber.style.left = `${scrubberWidth}%`;
+    };
 
-  const handleScrubberDrag = (e) => {
-    const scrubberElement = e.target;
-    const scrubberWidth = scrubberElement.offsetWidth;
-    const scrubberX = e.pageX - scrubberElement.getBoundingClientRect().left;
-    const positionPercentage = (scrubberX / scrubberWidth) * 100;
-    const newPosition = (positionPercentage * videoRef.current.duration) / 100;
+    video.addEventListener('timeupdate', handleVideoTimeUpdate);
 
-    videoRef.current.currentTime = newPosition;
-    setScrubberPosition(positionPercentage);
-  };
+    return () => {
+      video.removeEventListener('timeupdate', handleVideoTimeUpdate);
+    };
+  }, []);
+
+  console.log("frames", frames)
 
   return (
-    <div className="video-container">
-      <div className="video-player">
-        <video
-          ref={videoRef}
-          src="/earth.mp4"
-          onTimeUpdate={handleTimeUpdate}
-          controls
-        />
-        <div className="time-bar-container">
-          <div className="time-bar">
-            <div
-              className="current-time"
-              style={{ width: `${scrubberPosition}%` }}
-            >
-              {currentTime.toFixed(0)}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="controls">
-        <div
-          className="scrubber"
-          style={{ position: 'relative', width: '100%', height: '10px' }}
-          onMouseDown={handleScrubberDrag}
-        >
+    <div className="video-container w-3/4 mx-auto">
+      <video ref={videoRef} src={"/output_2023-07-14T14-23-22.mp4"} controls />
+      <div className="timeline-bar" ref={timelineRef}>
+        {frames.length > 0 && frames.map((frame, index) => (
           <div
-            className="scrubber-bar"
+            key={index}
+            className="timeline-frame"
             style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              width: `${scrubberPosition}%`,
-              height: '100%',
-              backgroundColor: 'red',
+              backgroundImage: `url(${frame})`,
+              width: `${frameWidth}px`,
+              height: '94%',
+              display: 'inline-block',
+            }}
+            onClick={() => {
+              const video = videoRef.current;
+              const percentage = index / frames.length;
+              const currentTime = video.duration * percentage;
+              video.currentTime = currentTime;
             }}
           />
-        </div>
-        <div className="timeline-container">
-          <div className="timeline">
-            {thumbnails.map((thumbnailURL, index) => (
-              <img
-                key={index}
-                src={thumbnailURL}
-                alt={`Thumbnail ${index}`}
-                className={`thumbnail ${
-                  currentTime >= index && currentTime < index + 1 ? 'active' : ''
-                }`}
-                onClick={() => videoRef.current.currentTime = index}
-              />
-            ))}
-          </div>
-        </div>
+        ))}
+        {/* <div className="timeline-progress" /> */}
+        <div className="scrubber" ref={scrubberRef} />
       </div>
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
   );
 };

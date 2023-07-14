@@ -13,6 +13,7 @@ import { LiaCutSolid } from "react-icons/lia";
 import { HiOutlineDownload } from "react-icons/hi";
 import { AiOutlineZoomIn, AiOutlineZoomOut } from "react-icons/ai";
 import { MdOutlineFolderDelete } from "react-icons/md";
+import axios from "axios";
 
 const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -70,14 +71,24 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
     }
   }, [videoRef]);
 
-  const handleStop = () => {
+  // const handleStop = () => {
+  //   if (videoRef.current) {
+  //     videoRef.current.pause();
+  //     videoRef.current.currentTime = 0;
+  //   }
+  //   setShow(true);
+  //   setText("Stop");
+  // };
+
+  const handleStop = async () => {
+    console.log("hello")
     if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-    setShow(true);
-    setText("Stop");
-  };
+      await axios.get("/api/stop")
+      setShow(true);
+      setText("Close");
+      window.location.reload();
+      }
+  }
 
   const handleDownloadVideo = () => {
     const videoElement = videoRef.current;
@@ -273,7 +284,7 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
       </div>
 
       <div className="flex space-x-7 text-black">
-        <div>
+        <div onClick={handleStop}>
           <TiMediaPlayReverse />
         </div>
         <div onClick={handlePause}>
