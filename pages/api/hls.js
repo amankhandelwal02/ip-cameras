@@ -1,3 +1,6 @@
+import convertToVideo from "../../utils/convertVideo";
+import transcodeToHLS from "../../utils/transcodeToHls";
+
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -33,6 +36,7 @@ export default function handler(req, res) {
     let frameCount = 0;
     let framePaths = [];
     let isTranscoding = false;
+    let isRecording = false;
 
     function captureFrame() {
       const filePath = path.join(outputPath, `output_${frameCount}.jpg`);
@@ -51,7 +55,13 @@ export default function handler(req, res) {
 
           if (!isTranscoding) {
             isTranscoding = true;
-            transcodeToHLS();
+            transcodeToHLS(
+              outputPath,
+              frameCount,
+              hlsOutputPath,
+              isTranscoding,
+              framePaths
+            );
           }
         } else {
           console.log("Error capturing image:", err);
@@ -60,137 +70,23 @@ export default function handler(req, res) {
       });
     }
 
-    function transcodeToHLS() {
-      const inputPattern = path.join(outputPath, "output_%d.jpg");
-      const frameRate = 3;
-      const frameDuration = 1;
-      const numFrames = Math.floor(frameRate * frameDuration);
-      const startNumber =
-        frameCount - numFrames >= 0 ? frameCount - numFrames * 1 : 0;
-
-      const commonArgs = [
-        "-y",
-        "-start_number",
-        startNumber,
-        "-framerate",
-        frameRate.toString(),
-        "-i",
-        inputPattern,
-        "-c:v",
-        "libx264",
-        "-pix_fmt",
-        "yuv420p",
-        "-b:v",
-        "2000k",
-        "-f",
-        "hls",
-        "-hls_time",
-        "0",
-        "-hls_list_size",
-        "0",
-        "-hls_segment_filename",
-        path.join(hlsOutputPath, "output_%d.ts"),
-        "-hls_flags",
-        "append_list+omit_endlist",
-        path.join(hlsOutputPath, "stream.m3u8"),
-      ];
-
-      const ffmpegArgs = commonArgs.concat([]);
-
-      const ffmpegProcess = spawn("ffmpeg", ffmpegArgs);
-
-      ffmpegProcess.on("exit", () => {
-        console.log("HLS conversion completed");
-        isTranscoding = false;
-        framePaths = [];
-      });
-    }
-
-    // function startRecording() {
-    //   // const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    //   // const outputVideoFilename = `output_${currentDate}.mp4`;
-    //   // const outputVideoPath = path.join(recordingPath, outputVideoFilename);
-
-    //   const outputVideoPath = path.join(recordingPath, 'output.mp4');
-    //   const inputImagePattern = path.join(outputPath, 'output_%d.jpg');
-
-    //   ffmpeg()
-    //     .input(inputImagePattern)
-    //     .inputFPS(3)
-    //     .output(outputVideoPath)
-    //     .outputOptions(['-c:v libx264', '-pix_fmt yuv420p'])
-    //     .on('start', () => {
-    //       isRecording = true;
-    //       console.log('Recording started');
-    //     })
-    //     .on('end', () => {
-    //       isRecording = false;
-    //       console.log('Recording ended');
-    //     })
-    //     .on('error', (err) => {
-    //       isRecording = false;
-    //       console.error('Error during recording:', err.message);
-    //     })
-    //     .run();
-    // }
-
-    // const recordingPath =
-    //   "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/public/recordings";
-    // const outputVideoFilename = "output.mp4";
-    // const outputVideoPath = path.join(recordingPath, outputVideoFilename);
-    // const inputImagePattern =
-    //   "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output/output_%d.jpg";
-
-    // Convert captured frames into an MP4 video
-    const outputPath =
-      "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/output"; // Update with the desired output directory
-    const videoOutputPath =
-      "/Users/ezeejain/Desktop/Lens_View/IP_NEW/ip-cameras/public/recordings/output.mp4"; // Update with the desired video output path
-
-    function convertToVideo() {
-      const ffmpegProcess = spawn("ffmpeg", [
-        "-y",
-        "-framerate",
-        1, // Remove the -r option
-        "-i",
-        path.join(outputPath, "output_%d.jpg"),
-        "-c:v",
-        "libx264",
-        "-pix_fmt",
-        "yuv420p",
-        "-t",
-        `${frameCount}`, // Set the duration of the video based on the number of frames captured
-        videoOutputPath,
-      ]);
-
-      ffmpegProcess.on("exit", () => {
-        console.log("Video conversion completed:", videoOutputPath);
-
-        // Cleanup: Remove the captured image files
-        for (const framePath of framePaths) {
-          if (fs.existsSync(framePath)) {
-            fs.unlinkSync(framePath);
-          }
-        }
-
-        // Clear the frame count and paths to start capturing new frames
-        frameCount = 0;
-        framePaths = [];
-      });
-    }
-
     setInterval(() => {
       if (framePaths.length > 0) {
-        transcodeToHLS();
+        transcodeToHLS(
+          outputPath,
+          frameCount,
+          hlsOutputPath,
+          isTranscoding,
+          framePaths
+        );
       }
-   
     }, 1000);
 
     setInterval(() => {
       if (!isRecording) {
-        convertToVideo();
+        convertToVideo(frameCount, framePaths);
       }
-    }, 10000)
+    }, 10000);
 
     app.use(express.static(hlsOutputPath));
 
@@ -315,9 +211,3 @@ export default function handler(req, res) {
     });
   }
 }
-
-
-
-
-
-
