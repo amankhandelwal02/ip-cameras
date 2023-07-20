@@ -1,10 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import Playback_option from "./playback/playback_option";
+import VideoTimeline from "./VideoTimeline";
 
 const LiveStreamPage = () => {
   const videoRef = useRef(null);
+  const videoWrapperRef = useRef(null);
   let hls;
+  const [lastPlayedTime, setLastPlayedTime] = useState(0);
+  
+  const handleTimeUpdate = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      setLastPlayedTime(videoElement.currentTime);
+    }
+  };
+ 
   useEffect(() => {
     const videoElement = videoRef.current;
 
@@ -43,20 +54,21 @@ const LiveStreamPage = () => {
 
   return (
     <div className="w-full h-screen px-3 bg-slate-900 space-y-3">
-      <div className="font-light opacity-80">
+      <div className="font-light opacity-80 relative overflow-hidden" ref={videoWrapperRef}>
         <video
           ref={videoRef}
-          className="video-js vjs-default-skin flex-1 sm:w-screen h-full"
+          className="video-js vjs-default-skin flex-1 sm:w-screen h-full w-full object-contain transform origin-top-left"
           controls
           autoPlay
           muted
-        
+          onTimeUpdate={handleTimeUpdate}
         />
         
       </div>
       <Playback_option 
       videoRef={videoRef}
       />
+        <VideoTimeline/>
     </div>
   );
 };

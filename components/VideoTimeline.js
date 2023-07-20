@@ -223,7 +223,7 @@ const VideoTimeline = ({ videoSrc }) => {
     };
   }, []);
 
-  console.log("frames", frames);
+  console.log("frames", frames)
 
   return (
     <div className="video-container w-3/4 mx-auto">

@@ -7,7 +7,8 @@ import MenuItem from "@mui/material/MenuItem";
 import { AiFillBackward, AiFillCamera, AiFillForward } from "react-icons/ai";
 import { FaPlay } from "react-icons/fa";
 import { GrStopFill } from "react-icons/gr";
-import { BiExpand, BiZoomIn } from "react-icons/bi";
+import { GiCrossedBones } from "react-icons/gi";
+import { BiExpand } from "react-icons/bi";
 import { IoMdFilm } from "react-icons/io";
 import { LiaCutSolid } from "react-icons/lia";
 import { HiOutlineDownload } from "react-icons/hi";
@@ -15,13 +16,14 @@ import { AiOutlineZoomIn, AiOutlineZoomOut } from "react-icons/ai";
 import { MdOutlineFolderDelete } from "react-icons/md";
 import axios from "axios";
 
-const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
+const Playback_option = ({ videoRef, setIsTrimming, isTrimming }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
-
+  const [recording, setRecording] = useState(false);
+  const rewindDuration = 5; // Number of seconds to rewind
   const [zoom, setZoom] = useState(1);
   const [show, setShow] = useState(false);
   const [text, setText] = useState("");
@@ -33,7 +35,39 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
   const closeHandleClose = () => {
     setAnchorEl(null);
   };
-  
+
+
+  const handleStartRecording = () => {
+    const constraints = { video: true, audio: true };
+
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then((stream) => {
+        videoRef.current.srcObject = stream;
+        const recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = handleDataAvailable;
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+        setRecordedChunks([]);
+        recorder.start();
+      })
+      .catch((error) => {
+        console.error('Error accessing media devices:', error);
+      });
+  };
+
+  const handleDataAvailable = (event) => {
+    if (event.data.size > 0) {
+      setRecordedChunks((prevChunks) => [...prevChunks, event.data]);
+    }
+  };
+
+  const handleStopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
+
   const handlePlay = () => {
     if (videoRef.current) {
       videoRef.current.play();
@@ -50,26 +84,26 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
     setText("Pause");
   };
 
-  const handleZoomIn = () => {
-    setZoom((prevZoom) => Math.min(prevZoom + 0.1, 2)); // Increase zoom by 0.1, up to a maximum of 2
-  };
+  // const handleZoomIn = () => {
+  //   setZoom((prevZoom) => Math.min(prevZoom + 0.1, 2)); // Increase zoom by 0.1, up to a maximum of 2
+  // };
 
-  const handleZoomOut = () => {
-    setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.5)); // Decrease zoom by 0.1, down to a minimum of 0.5
-  };
+  // const handleZoomOut = () => {
+  //   setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.5)); // Decrease zoom by 0.1, down to a minimum of 0.5
+  // };
 
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      videoElement.addEventListener("wheel", (event) => {
-        if (event.deltaY < 0) {
-          handleZoomIn();
-        } else if (event.deltaY > 0) {
-          handleZoomOut();
-        }
-      });
-    }
-  }, [videoRef]);
+  // useEffect(() => {
+  //   const videoElement = videoRef.current;
+  //   if (videoElement) {
+  //     videoElement.addEventListener("wheel", (event) => {
+  //       if (event.deltaY < 0) {
+  //         handleZoomIn();
+  //       } else if (event.deltaY > 0) {
+  //         handleZoomOut();
+  //       }
+  //     });
+  //   }
+  // }, [videoRef]);
 
   // const handleStop = () => {
   //   if (videoRef.current) {
@@ -80,30 +114,55 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
   //   setText("Stop");
   // };
 
+
+  const handleZoom = (scale) => {
+    const videoElement = videoRef.current;
+    videoElement.style.transform = `scale(${scale})`;
+  };
+
+  const handleZoomIn = () => {
+    const videoElement = videoRef.current;
+    const currentScale = parseFloat(videoElement.style.transform.replace('scale(', '').replace(')', '')) || 1;
+    const newScale = Math.min(currentScale + 0.1, 2); // Increase scale by 0.1, but limit it to a maximum of 2
+    handleZoom(newScale);
+  };
+
+  const handleZoomOut = () => {
+    const videoElement = videoRef.current;
+    const currentScale = parseFloat(videoElement.style.transform.replace('scale(', '').replace(')', '')) || 1;
+    const newScale = Math.max(currentScale - 0.1, 0.5); // Decrease scale by 0.1, but limit it to a minimum of 0.5
+    handleZoom(newScale);
+  };
+
+
+  const handleRewind = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      const currentTime = videoElement.currentTime;
+      videoElement.currentTime = Math.max(0, currentTime - rewindDuration);
+    }
+  };
+
   const handleStop = async () => {
-    console.log("hello")
+    console.log("hello");
     if (videoRef.current) {
-      await axios.get("/api/stop")
+      await axios.get("/api/stop");
       setShow(true);
       setText("Close");
       window.location.reload();
-      }
-  }
+    }
+  };
 
   const handleDownloadVideo = () => {
     const videoElement = videoRef.current;
     if (videoElement) {
       const url = videoElement.src;
       const filename = url.split("/").pop();
-      fetch(url)
-        .then((response) => response.blob())
-        .then((blob) => {
-          const file = new File([blob], filename, { type: "video/mp4" });
-          saveAs(file);
-        })
-        .catch((error) => {
-          console.error("Failed to download video:", error);
-        });
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = url;
+      downloadLink.download = filename;
+      downloadLink.click();
     }
   };
 
@@ -157,12 +216,6 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
     }
   };
 
-  const handleTimeUpdate = () => {
-    if (videoRef.current.currentTime >= trimEndTime) {
-      videoRef.current.pause();
-      videoRef.current.removeEventListener("timeupdate", handleTimeUpdate);
-    }
-  };
 
   const captureImage = () => {
     const videoElement = videoRef.current;
@@ -188,34 +241,40 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
     }
   };
 
-  const startRecording = () => {
-    const videoElement = videoRef.current;
-    if (videoElement && !recording) {
-      const stream = videoElement.captureStream();
-      const recorder = new MediaRecorder(stream);
-      setRecordedChunks([]);
+  // const startRecording = () => {
+  //   const videoElement = videoRef.current;
+  //   if (videoElement && !recording) {
+  //     const stream = videoElement.captureStream();
+  //     const recorder = new MediaRecorder(stream);
+  //     setRecordedChunks([]);
 
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          setRecordedChunks((prevChunks) => [...prevChunks, event.data]);
-        }
-      };
+  //     recorder.ondataavailable = (event) => {
+  //       if (event.data.size > 0) {
+  //         setRecordedChunks((prevChunks) => [...prevChunks, event.data]);
+  //       }
+  //     };
 
-      recorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: "video/webm" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "live-clip.webm";
-        link.click();
-        URL.revokeObjectURL(url);
-      };
+  //     recorder.onstop = () => {
+  //       const blob = new Blob(recordedChunks, { type: "video/webm" });
+  //       const url = URL.createObjectURL(blob);
+  //       const link = document.createElement("a");
+  //       link.href = url;
+  //       link.download = "live-clip.webm";
+  //       link.click();
+  //       URL.revokeObjectURL(url);
+  //     };
 
-      recorder.start();
-      setRecording(true);
-      setMediaRecorder(recorder);
+  //     recorder.start();
+  //     setRecording(true);
+  //     setMediaRecorder(recorder);
+  //   }
+  // };
+
+  const startRecording = async () => {
+    if (videoRef.current) {
+      await axios.get("/api/record");
     }
-  };
+  }
 
   const stopRecording = () => {
     if (mediaRecorder && recording) {
@@ -225,12 +284,20 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
     }
   };
 
-
   const handleTrimButtonClick = () => {
     setIsTrimming(true);
   };
 
+  const handlecClose = async () => {
+    if (videoRef.current) {
+      await axios.get("/api/stop");
+      setShow(true);
+      setText("Close");
+      window.location.reload();
+    }
+  };
 
+  
 
   const hhandleBackward = () => {
     const video = videoRef.current;
@@ -241,11 +308,16 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
     }
   };
 
+  const handleVolumeChange = (newVolume) => {
+    const videoElement = videoRef.current;
+    videoElement.volume = parseFloat(newVolume); // Convert the value to a number
+  };
+
   useEffect(() => {
     setTimeout(() => {
       setShow(false);
     }, 2500);
-  }, [show]);
+  }, [show])
 
   const Text = ({ text }) => {
     return (
@@ -280,11 +352,12 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
           <MenuItem onClick={handleClose}>3*3</MenuItem>
           <MenuItem onClick={handleClose}>4*4</MenuItem>
         </Menu>
-        <MdOutlineFolderDelete/>
+        <MdOutlineFolderDelete />
       </div>
 
-      <div className="flex space-x-7 text-black">
-        <div onClick={handleStop}>
+      <div className="flex space-x-7 text-black cursor-pointer duration-300">
+        <div onClick={handleRewind}>
+          {/* Pending */}
           <TiMediaPlayReverse />
         </div>
         <div onClick={handlePause}>
@@ -303,13 +376,13 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
 
       <div className="flex items-center space-x-7 text-black cursor-pointer duration-300">
         <div>
-          {!recording && (
-            <div onClick={startRecording}>
+        {!isRecording ? (
+            <div onClick={handleStartRecording}>
               <IoMdFilm />
             </div>
-          )}
-          {recording && (
-            <div onClick={stopRecording}>
+            ) : (
+         
+            <div onClick={handleStopRecording}>
               <IoMdFilm />
             </div>
           )}
@@ -318,10 +391,7 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
         <div onClick={captureImage}>
           <AiFillCamera />
         </div>
-        <div>
-        {isTrimming ?  <LiaCutSolid /> :  <LiaCutSolid />}
-         
-        </div>
+        <div>{isTrimming ? <LiaCutSolid /> : <LiaCutSolid />}</div>
         <div onClick={handleZoomIn}>
           <AiOutlineZoomIn />
         </div>
@@ -336,9 +406,20 @@ const Playback_option = ({ videoRef,setIsTrimming, isTrimming }) => {
           {" "}
           <HiOutlineDownload />
         </div>
+        <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        value={videoRef.current ? videoRef.current.volume : 1}
+        onChange={(e) => handleVolumeChange(e.target.value)}
+      />
         <div onClick={handleToggleFullScreen}>
           {" "}
           <BiExpand />
+        </div>
+        <div onClick={handleStop}>
+          <GiCrossedBones />
         </div>
       </div>
     </div>
